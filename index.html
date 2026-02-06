@@ -408,16 +408,16 @@
             z-index: 10;
         }
         
-        /* WEBGL LENS DRIP SHADER LAYER */
-        #lens-drip-canvas, #heat-haze-canvas, #atmos-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* Critical: Stops the rain from blocking clicks */
-    z-index: 5;
-    image-rendering: pixelated; /* Keeps tiny drops sharp on mobile */
+       /* --- EMERGENCY LENS FIX --- */
+#lens-drip-canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 99999 !important; /* Force to the very front layer */
+    pointer-events: none !important;
+    display: block !important;
+    opacity: 1 !important;
 }
         
         /* HEAT HAZE DISTORTION */
@@ -4056,7 +4056,13 @@ function animateLensDrip() {
     if (!APP.shaders.lensDrip.active) return;
     const canvas = $('lens-drip-canvas');
     const ctx = canvas?.getContext('2d');
+    if (canvas && canvas.width === 0) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
     if (!ctx) return;
+    
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     initLensDripSeeds();
