@@ -910,6 +910,12 @@ body.shooting-mode #btn-shooting {
         transform: scale(1);
         filter: brightness(1) contrast(1);
     }
+}#user-logo-layer {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute;
+    z-index: 1000; /* Keeps it above the rain */
+    pointer-events: none;
 }</style>
 </head>
 <body oncontextmenu="return false;">
@@ -3918,27 +3924,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // GEO_HANDSHAKE + OPEN-METEO API + REFRACTIVE RAIN
     // ========================================
     
-    // Initialize atmosphere canvas and refraction buffer
-    function initAtmosphereCanvas() {
-        APP.atmosphere.canvas = $('atmos-canvas');
-        APP.atmosphere.refractionCanvas = $('refraction-buffer');
-        
-        if (APP.atmosphere.canvas) {
-            APP.atmosphere.ctx = APP.atmosphere.canvas.getContext('2d');
-            const stage = $('stage');
-            APP.atmosphere.canvas.width = stage.clientWidth;
-            APP.atmosphere.canvas.height = stage.clientHeight;
-        }
-        
-        if (APP.atmosphere.refractionCanvas) {
-            APP.atmosphere.refractionCtx = APP.atmosphere.refractionCanvas.getContext('2d');
-            APP.atmosphere.refractionCanvas.width = APP.render.canvas.width;
-            APP.atmosphere.refractionCanvas.height = APP.render.canvas.height;
-        }
+    /* --- DRIS_CORE: SOVEREIGN_ATMOSPHERE_ENGINE --- */
+
+// 1. Unified Canvas & Buffer Initialization
+/* --- DRIS_CORE: SOVEREIGN_ATMOSPHERE_ENGINE --- */
+
+// 1. Unified Canvas & Buffer Initialization
+function initAtmosphereCanvas() {
+    APP.atmosphere.canvas = $('atmos-canvas');
+    APP.atmosphere.refractionCanvas = $('refraction-buffer');
+    
+    const stage = $('stage');
+    if (APP.atmosphere.canvas && stage) {
+        APP.atmosphere.ctx = APP.atmosphere.canvas.getContext('2d');
+        APP.atmosphere.canvas.width = stage.clientWidth;
+        APP.atmosphere.canvas.height = stage.clientHeight;
     }
     
-    // GEO_HANDSHAKE: Get real coordinates
-   async function initAtmosphere() {
+    // Bridge to VJ_ENGINE for refraction effects
+    if (APP.atmosphere.refractionCanvas && APP.render?.canvas) {
+        APP.atmosphere.refractionCtx = APP.atmosphere.refractionCanvas.getContext('2d');
+        APP.atmosphere.refractionCanvas.width = APP.render.canvas.width;
+        APP.atmosphere.refractionCanvas.height = APP.render.canvas.height;
+        $('refraction-buffer').classList.add('active');
+    }
+    log('ATMOS_CANVAS: INITIALIZED');
+}
+
+// 2. GEO_HANDSHAKE: GPS & IP Fallback Logic
+async function initAtmosphere() {
     log('GEO_HANDSHAKE: ACQUIRING...');
     const geoStatus = $('geo-status');
     if (geoStatus) geoStatus.textContent = 'GEO: ACQUIRING...';
@@ -3950,377 +3964,162 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // This triggers the real browser popup
         navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                APP.atmosphere.latitude = position.coords.latitude;
-                APP.atmosphere.longitude = position.coords.longitude;
-                log(`GPS_LOCKED: ${APP.atmosphere.latitude.toFixed(2)}`);
+            async (p) => {
+                APP.atmosphere.latitude = p.coords.latitude;
+                APP.atmosphere.longitude = p.coords.longitude;
+                log(`GPS_LOCKED: ${p.coords.latitude.toFixed(2)}`);
                 await fetchSatelliteWeather();
                 resolve(true);
             },
-            async (error) => {
-                log('GPS_DENIED: FALLBACK_ENGAGED');
-                // Use the IP lookup ONLY if the user said NO to GPS
+            async () => {
+                log('GPS_DENIED: IP_FALLBACK_ENGAGED');
                 try {
                     const res = await fetch('https://ipapi.co/json/');
                     const data = await res.json();
                     APP.atmosphere.latitude = data.latitude;
                     APP.atmosphere.longitude = data.longitude;
                     APP.atmosphere.city = data.city.toUpperCase();
-                    await fetchSatelliteWeather();
                 } catch (e) {
-                    APP.atmosphere.latitude = 52.52; // Absolute backup
-                    APP.atmosphere.longitude = 13.41;
-                    await fetchSatelliteWeather();
+                    APP.atmosphere.latitude = 52.37; // Amsterdam
+                    APP.atmosphere.longitude = 4.89;
                 }
+                await fetchSatelliteWeather();
                 resolve(false);
             },
             { enableHighAccuracy: true, timeout: 8000 }
         );
     });
 }
-    
-    // Fetch weather from Open-Meteo with reverse geocoding
-    async function fetchSatelliteWeather() {
+
+// 3. SATELLITE_SYNC: Weather API & Reverse Geocoding
+async function fetchSatelliteWeather() {
+    try {
+        const lat = APP.atmosphere.latitude || 52.37;
+        const lon = APP.atmosphere.longitude || 4.89;
+        
+        const weatherResp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const weather = await weatherResp.json();
+        
+        const temp = weather.current_weather.temperature;
+        const code = weather.current_weather.weathercode;
+        const wind = weather.current_weather.windspeed;
+        
+        APP.atmosphere.temperature = temp;
+        APP.weather.windSpeed = wind;
+        APP.atmosphere.isRaining = [51,53,55,61,63,65,80,81,82,95,96,99].includes(code);
+
+        // Reverse Geo for City Name
         try {
-            const lat = APP.atmosphere.latitude || 52.52;
-            const lon = APP.atmosphere.longitude || 13.41;
-            
-            // Weather data
-            const weatherResp = await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=weathercode`
-            );
-            const weather = await weatherResp.json();
-            
-            const temp = weather.current_weather.temperature;
-            const weatherCode = weather.current_weather.weathercode;
-            const windSpeed = weather.current_weather.windspeed;
-            
-            APP.atmosphere.temperature = temp;
-            APP.atmosphere.weatherCode = weatherCode;
-            
-            // Weather code interpretation
-            const weatherMap = {
-                0: 'CLEAR', 1: 'MAINLY_CLEAR', 2: 'PARTLY_CLOUDY', 3: 'OVERCAST',
-                45: 'FOG', 48: 'RIME_FOG',
-                51: 'LIGHT_DRIZZLE', 53: 'DRIZZLE', 55: 'DENSE_DRIZZLE',
-                61: 'LIGHT_RAIN', 63: 'RAIN', 65: 'HEAVY_RAIN',
-                71: 'LIGHT_SNOW', 73: 'SNOW', 75: 'HEAVY_SNOW',
-                80: 'LIGHT_SHOWERS', 81: 'SHOWERS', 82: 'VIOLENT_SHOWERS',
-                95: 'THUNDERSTORM', 96: 'HAIL_STORM', 99: 'HEAVY_HAIL'
-            };
-            
-            const condition = weatherMap[weatherCode] || 'UNKNOWN';
-            APP.atmosphere.metar = `${temp}C // ${condition} // ${windSpeed}KMH`;
-            
-            // Check if raining
-            APP.atmosphere.isRaining = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(weatherCode);
-            
-            // Reverse geocoding for city name
-            try {
-                const geoResp = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-                );
-                const geo = await geoResp.json();
-                APP.atmosphere.city = (geo.address?.city || geo.address?.town || geo.address?.village || 'UNKNOWN').toUpperCase();
-                APP.atmosphere.country = (geo.address?.country_code || '').toUpperCase();
-            } catch (e) {
-                APP.atmosphere.city = 'UNKNOWN';
-            }
-            
-            // Update geo status
-            const geoStatus = $('geo-status');
-            if (geoStatus) geoStatus.textContent = `GEO: ${APP.atmosphere.city} [${APP.atmosphere.country}]`;
-            
-            // Update ticker with METAR data
-            updateTickerWithMetar();
-            
-            // ========================================
-            // AUTO-WEATHER TRIGGER: Geolocation -> Satellite -> Trasudate
-            // This bridges the satellite data to the rain engine
-            // ========================================
-            processWeatherCondition(weatherCode, condition);
-            
-            log(`SATELLITE: [${APP.atmosphere.city}] ${APP.atmosphere.metar}`);
-            
-        } catch (e) {
-            log('SATELLITE_ERROR: ' + e.message);
-            const weatherStatus = $('weather-status');
-            if (weatherStatus) weatherStatus.textContent = 'WEATHER: ERROR';
-        }
-    }
-    
-    // Update bottom ticker with location and METAR
-  function updateTickerWithMetar() {
+            const geoResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+            const geo = await geoResp.json();
+            APP.atmosphere.city = (geo.address.city || geo.address.town || "AMSTERDAM").toUpperCase();
+            APP.atmosphere.country = (geo.address.country_code || "NL").toUpperCase();
+        } catch (e) { APP.atmosphere.city = "AMSTERDAM"; }
+
+        const condition = APP.atmosphere.isRaining ? "RAIN" : "CLEAR";
+        APP.atmosphere.metar = `${temp}C // ${condition} // ${wind}KMH`;
+        
+        const geoStatus = $('geo-status');
+        if (geoStatus) geoStatus.textContent = `GEO: ${APP.atmosphere.city} [${APP.atmosphere.country}]`;
+        
+        updateTickerWithMetar();
+        processWeatherCondition(code, condition);
+        log(`SAT_LINK: ${APP.atmosphere.city} SYNCED`);
+        
+    } catch (e) { log('SAT_ERROR: ' + e.message); }
+}
+
+// 4. TICKER_SYNC: Push data to the bottom UI
+function updateTickerWithMetar() {
     const ticker = $('ticker-text');
     if (ticker && APP.atmosphere.city) {
-        // This line forces the ticker to use the ACTUAL data fetched from the API
-        const city = APP.atmosphere.city;
-        const temp = APP.atmosphere.temperature;
         const status = APP.atmosphere.isRaining ? "PRECIPITATION_DETECTED" : "ATMOS_STABLE";
-        
-        ticker.innerHTML = `[LOC: ${city}] // [TEMP: ${temp}°C] // [SYSTEM: ${status}] // [SAT_LINK: 100%]`;
-        
-        // This is the "Truth" log
-        log(`REAL_TIME_SYNC: ${city} @ ${temp}°C`);
+        ticker.innerHTML = `[LOC: ${APP.atmosphere.city}] // [TEMP: ${APP.atmosphere.temperature}°C] // [SYSTEM: ${status}] // [SAT_LINK: 100%]`;
     }
 }
-    
-    // Initialize refraction buffer for displacement mapping
-    function initRefractionBuffer() {
-        if (!APP.atmosphere.refractionCanvas) {
-            APP.atmosphere.refractionCanvas = $('refraction-buffer');
-            if (APP.atmosphere.refractionCanvas) {
-                APP.atmosphere.refractionCtx = APP.atmosphere.refractionCanvas.getContext('2d');
-                const stage = $('stage');
-                APP.atmosphere.refractionCanvas.width = stage.clientWidth;
-                APP.atmosphere.refractionCanvas.height = stage.clientHeight;
-            }
-        }
-        $('refraction-buffer').classList.add('active');
-    }
-    
-    // CLEAN RAIN DROP - realistic stutter-and-slide physics
-    function createRefractiveRainDrop() {
-        if (!APP.atmosphere.ctx) return;
-        
-        const canvas = APP.atmosphere.canvas;
-        const intensity = APP.atmosphere.intensity || 50;
-        const drop = {
-            x: Math.random() * canvas.width,
-            y: -30,
-            length: 15 + Math.random() * 25,
-            speed: 8 + Math.random() * 12 + (intensity / 10),
-            opacity: 0.3 + Math.random() * 0.4,
-            // Stutter-and-slide physics
-            velocity: 0,
-            gravity: 0.6 + Math.random() * 0.4,
-            stutter: Math.random() < 0.2,
-            stutterCounter: 0,
-            maxStutter: 3 + Math.floor(Math.random() * 6),
-            refractIndex: 1.15 + Math.random() * 0.2
-        };
-        APP.atmosphere.rainDrops.push(drop);
-    }
-    
-    // Render CLEAN realistic rain - no psychedelic colors
-    function renderRefractiveRain() {
-        if (!APP.atmosphere.ctx || !APP.trasudate.active) return;
-        
-        const ctx = APP.atmosphere.ctx;
-        const canvas = APP.atmosphere.canvas;
-        const vjCanvas = APP.render.canvas;
-        const intensity = APP.atmosphere.intensity || 50;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Create new drops based on intensity
-        const spawnRate = intensity / 30;
-        if (Math.random() < spawnRate) {
-            createRefractiveRainDrop();
-        }
-        
-        // Update and draw drops with stutter-and-slide physics
-        APP.atmosphere.rainDrops = APP.atmosphere.rainDrops.filter(drop => {
-            // Stutter-and-slide gravity
-            if (drop.stutter && drop.stutterCounter < drop.maxStutter) {
-                drop.stutterCounter++;
-                drop.velocity *= 0.4;
-            } else {
-                drop.velocity += drop.gravity;
-                drop.stutter = Math.random() < 0.03;
-                drop.stutterCounter = 0;
-            }
-            
-            drop.y += drop.velocity;
-            
-            // Draw CLEAN rain drop - realistic blue/white gradient
-            const gradient = ctx.createLinearGradient(drop.x, drop.y, drop.x, drop.y + drop.length);
-            gradient.addColorStop(0, 'transparent');
-            gradient.addColorStop(0.2, `rgba(200, 220, 255, ${drop.opacity * 0.3})`);
-            gradient.addColorStop(0.5, `rgba(180, 200, 240, ${drop.opacity * 0.6})`);
-            gradient.addColorStop(0.8, `rgba(160, 180, 220, ${drop.opacity * 0.4})`);
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(drop.x, drop.y);
-            ctx.lineTo(drop.x, drop.y + drop.length);
-            ctx.stroke();
-            
-            // Subtle magnification effect
-            if (APP.atmosphere.refractionCtx && vjCanvas) {
-                try {
-                    const scale = drop.refractIndex;
-                    const sourceX = (drop.x / canvas.width) * vjCanvas.width;
-                    const sourceY = (drop.y / canvas.height) * vjCanvas.height;
-                    const sourceW = 15;
-                    const sourceH = drop.length * 1.5;
-                    
-                    APP.atmosphere.refractionCtx.globalAlpha = 0.08;
-                    APP.atmosphere.refractionCtx.drawImage(
-                        vjCanvas,
-                        sourceX - sourceW/2, sourceY - sourceH/2, sourceW, sourceH,
-                        drop.x - sourceW*scale/2, drop.y - sourceH*scale/2, sourceW * scale, sourceH * scale
-                    );
-                    APP.atmosphere.refractionCtx.globalAlpha = 1;
-                } catch (e) { /* ignore */ }
-            }
-            
-            return drop.y < canvas.height + 50;
-        });
-        
-        if (APP.trasudate.active) {
-            requestAnimationFrame(renderRefractiveRain);
-        }
-    }
-    
-    // ========================================
-    // GEOLOCATION -> SATELLITE -> TRASUDATE
-    // Auto-weather integration (no manual buttons)
-    // ========================================
-    
-    // Update weather UI status displays
-    function updateWeatherUI(condition, isRaining) {
-        const weatherStatus = $('weather-status');
-        const rainStatus = $('rain-status');
-        const atmosDot = $('atmos-dot');
-        
-        if (weatherStatus) weatherStatus.textContent = 'WEATHER: ' + condition.toUpperCase();
-        
-        if (rainStatus) {
-            if (isRaining) {
-                rainStatus.textContent = 'RAIN: AUTO_ENABLED';
-                rainStatus.style.color = 'var(--c)';
-            } else {
-                rainStatus.textContent = 'RAIN: AUTO_DISABLED';
-                rainStatus.style.color = 'var(--text-dim)';
-            }
-        }
-        
-        if (atmosDot) atmosDot.classList.toggle('off', !isRaining);
-    }
-    
-    // Enable rain automatically based on satellite weather
-    function enableRainAuto() {
-        if (!APP.trasudate.active) {
-            APP.trasudate.active = true;
-            initTrasudateEngine();
-            initAtmosphereCanvas();
-            initRefractionBuffer();
-            renderRefractiveRain();
-            log('WEATHER_AUTO: RAIN_ENABLED');
-        }
-    }
-    
-    // Disable rain automatically
-    function disableRainAuto() {
-        if (APP.trasudate.active) {
-            APP.trasudate.active = false;
-            stopTrasudateEngine();
-            APP.atmosphere.rainDrops = [];
-            if (APP.atmosphere.ctx) {
-                APP.atmosphere.ctx.clearRect(0, 0, APP.atmosphere.canvas.width, APP.atmosphere.canvas.height);
-            }
-            log('WEATHER_AUTO: RAIN_DISABLED');
-        }
-    }
-    
-    // Parse weather condition and trigger visual effects automatically
-    function processWeatherCondition(weatherCode, condition) {
-        // Weather codes: 51,53,55 = drizzle, 61,63,65 = rain, 80,81,82 = showers, 95,96,99 = thunderstorm
-        const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
-        const isRaining = rainCodes.includes(weatherCode);
-        const temp = APP.atmosphere.temperature || 20;
-        const isHot = temp > 30;
-        
-        updateWeatherUI(condition, isRaining);
-        
-        // AUTO LENS DRIP - Rain triggers water droplet effect
-        if (isRaining) {
-            enableRainAuto();
-            activateLensDrip(true);
-            if ($('weather-fx')) $('weather-fx').textContent = 'FX: LENS_DRIP (RAIN)';
-        } else {
-            disableRainAuto();
-            activateLensDrip(false);
-        }
-        
-        // AUTO HEAT HAZE - Hot weather (>30C) triggers distortion
-        if (isHot && !isRaining) {
-            activateHeatHaze(true);
-            if ($('weather-fx')) $('weather-fx').textContent = 'FX: HEAT_HAZE (' + temp + 'C)';
-        } else if (!isRaining) {
-            activateHeatHaze(false);
-            if ($('weather-fx')) $('weather-fx').textContent = 'FX: NONE';
-        }
-    }
-    
-    // LENS DRIP EFFECT - Water droplets on lens during rain
-    function activateLensDrip(active) {
-        const canvas = $('lens-drip-canvas');
-        if (!canvas) return;
-        
-        APP.shaders.lensDrip.active = active;
-        canvas.classList.toggle('active', active);
-        
-        if (active && !APP.shaders.lensDrip.rafId) {
-            animateLensDrip();
-        }
-    }
-    
-    function animateLensDrip() {
-    if (!APP.shaders.lensDrip.active) return;
-    
-    // ... (rest of your existing setup code) ...
 
-    // PULL LIVE WEATHER DATA
-    // We use your 'temp' and 'weather' variables from the Amsterdam sync
-    const liveIntensity = (APP.weather.precipitation || 50) / 100;
-    const liveWind = (APP.weather.windSpeed || 10) / 5; // Use wind to tilt the drops
+// 5. HQ_LENS_DRIP: The gravity-sliding engine
+function initLensDripSeeds() {
+    if (!APP.shaders.lensDrip.seeds) {
+        APP.shaders.lensDrip.seeds = Array.from({length: 80}, () => ({
+            x: Math.random(),
+            speed: 0.5 + Math.random() * 2.0,
+            size: 0.8 + Math.random() * 2.5, // HQ Tiny Drops
+            offset: Math.random() * 3000,
+            opacity: 0.2 + Math.random() * 0.5
+        }));
+    }
+}
+
+function animateLensDrip() {
+    if (!APP.shaders.lensDrip.active) return;
+    const canvas = $('lens-drip-canvas');
+    const ctx = canvas?.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    initLensDripSeeds();
+
+    const time = APP.shaders.lensDrip.time++;
+    const intensity = (APP.atmosphere.isRaining ? 80 : 0) / 100;
+    const windTilt = (APP.weather.windSpeed || 0) * 0.05;
 
     APP.shaders.lensDrip.seeds.forEach((drop, i) => {
-        if (i > Math.floor(60 * liveIntensity)) return;
+        if (i > Math.floor(80 * intensity)) return;
 
-        // X now tilts based on Wind Speed (Sliding diagonally)
-        const x = (drop.x * canvas.width) + (Math.sin(time * 0.005) * liveWind);
-        
-        // Y speed is boosted by actual intensity
-        const y = ((time * (drop.speed + liveIntensity) + drop.offset) % (canvas.height + 150)) - 75;
-        
-        // ... (draw the HQ ellipse and highlight as before) ...
+        const x = (drop.x * canvas.width) + (Math.sin(time * 0.005) * windTilt);
+        const y = ((time * drop.speed + drop.offset) % (canvas.height + 150)) - 75;
+        const size = drop.size;
+
+        ctx.globalCompositeOperation = 'screen';
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
+        grad.addColorStop(0, `rgba(180, 230, 255, ${drop.opacity})`);
+        grad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(x, y, size * 0.7, size * 2.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // SPECULAR GLINT
+        ctx.fillStyle = `rgba(255, 255, 255, ${drop.opacity * 0.7})`;
+        ctx.beginPath();
+        ctx.arc(x - (size * 0.2), y - (size * 0.6), size * 0.15, 0, Math.PI * 2);
+        ctx.fill();
     });
+
+    APP.shaders.lensDrip.rafId = requestAnimationFrame(animateLensDrip);
 }
-        
-        // Draw water droplets
-        for (let i = 0; i < Math.floor(20 * intensity); i++) {
-            const x = (Math.sin(time * 0.01 + i * 1.7) * 0.4 + 0.5) * canvas.width;
-            const y = ((time * 2 + i * 70) % (canvas.height + 120)) - 60;
-            const size = 12 + Math.sin(i * 0.8) * 6;
-            
-            // Droplet with refraction
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y + size * 0.2, size);
-            gradient.addColorStop(0, 'rgba(220, 240, 255, 0.3)');
-            gradient.addColorStop(0.5, 'rgba(200, 220, 255, 0.15)');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.ellipse(x, y, size * 0.5, size, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Highlight
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.beginPath();
-            ctx.arc(x - size * 0.15, y - size * 0.2, size * 0.12, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        APP.shaders.lensDrip.rafId = requestAnimationFrame(animateLensDrip);
+
+// 6. Master Weather Toggle
+function processWeatherCondition(weatherCode, condition) {
+    const isRaining = [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
+    
+    // Update UI Status
+    const status = $('weather-status');
+    if (status) status.textContent = 'WEATHER: ' + condition.toUpperCase();
+    $('atmos-dot')?.classList.toggle('off', !isRaining);
+
+    if (isRaining) {
+        APP.shaders.lensDrip.active = true;
+        $('lens-drip-canvas')?.classList.add('active');
+        initAtmosphereCanvas();
+        if (!APP.shaders.lensDrip.rafId) animateLensDrip();
+        log('WEATHER_AUTO: RAIN_ENABLED');
+    } else {
+        APP.shaders.lensDrip.active = false;
+        $('lens-drip-canvas')?.classList.remove('active');
+        if (APP.shaders.lensDrip.rafId) cancelAnimationFrame(APP.shaders.lensDrip.rafId);
     }
+}
+
+// Global Initialization
+APP.shaders = APP.shaders || { lensDrip: { active: false, time: 0, rafId: null, seeds: null } };
+APP.weather = APP.weather || { windSpeed: 0 };
+APP.atmosphere = APP.atmosphere || { isRaining: false, city: "AMSTERDAM", temperature: 0 };
+
+initAtmosphere();
     
     // HEAT HAZE EFFECT - Thermal distortion during hot weather
     function activateHeatHaze(active) {
