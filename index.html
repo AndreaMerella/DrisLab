@@ -409,15 +409,16 @@
         }
         
         /* WEBGL LENS DRIP SHADER LAYER */
-        #lens-drip-canvas {
-            position: absolute;
-            inset: 0;
-            z-index: 2450;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        #lens-drip-canvas.active { opacity: 1; }
+        #lens-drip-canvas, #heat-haze-canvas, #atmos-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Critical: Stops the rain from blocking clicks */
+    z-index: 5;
+    image-rendering: pixelated; /* Keeps tiny drops sharp on mobile */
+}
         
         /* HEAT HAZE DISTORTION */
         #heat-haze-canvas {
@@ -871,35 +872,16 @@ body.shooting-mode #btn-shooting {
         body.seismic-active { animation: seismic-shake 0.08s infinite; }
         
     /* HORIZONTAL TV/MOBILE OVERRIDE */
-/* --- HORIZONTAL TV/MOBILE OVERRIDE --- */
 @media (orientation: landscape) and (max-width: 1024px) {
-    /* Step 1: UI Purge */
-    .sidebar, #top-bar, #bottom-bar, #sys-log, header { 
+    .sidebar, #top-bar, #bottom-bar, #sys-log { 
         display: none !important; 
     }
-    
-    /* Step 2: The Stage Slam */
     #stage {
         position: fixed !important;
         inset: 0 !important;
         border: none !important;
         z-index: 9999;
-        background: #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
-
-    /* Step 3: Force the Neural/VJ Asset to fit 100% of the screen */
-    #vj-canvas, #main-canvas, #live-vid {
-        width: 100vw !important;
-        height: 100vh !important;
-        object-fit: cover !important; /* This removes the black sidebars */
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-
     #overlay-layer {
         padding: 5vh 5vw;
     }
@@ -4291,25 +4273,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function animateLensDrip() {
-        if (!APP.shaders.lensDrip.active) {
-            APP.shaders.lensDrip.rafId = null;
-            return;
-        }
+    if (!APP.shaders.lensDrip.active) return;
+    
+    // ... (rest of your existing setup code) ...
+
+    // PULL LIVE WEATHER DATA
+    // We use your 'temp' and 'weather' variables from the Amsterdam sync
+    const liveIntensity = (APP.weather.precipitation || 50) / 100;
+    const liveWind = (APP.weather.windSpeed || 10) / 5; // Use wind to tilt the drops
+
+    APP.shaders.lensDrip.seeds.forEach((drop, i) => {
+        if (i > Math.floor(60 * liveIntensity)) return;
+
+        // X now tilts based on Wind Speed (Sliding diagonally)
+        const x = (drop.x * canvas.width) + (Math.sin(time * 0.005) * liveWind);
         
-        const canvas = $('lens-drip-canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        // Y speed is boosted by actual intensity
+        const y = ((time * (drop.speed + liveIntensity) + drop.offset) % (canvas.height + 150)) - 75;
         
-        const stage = $('stage');
-        if (stage) {
-            canvas.width = stage.clientWidth;
-            canvas.height = stage.clientHeight;
-        }
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const time = APP.shaders.lensDrip.time++;
-        const intensity = (APP.atmosphere.intensity || 50) / 100;
+        // ... (draw the HQ ellipse and highlight as before) ...
+    });
+}
         
         // Draw water droplets
         for (let i = 0; i < Math.floor(20 * intensity); i++) {
@@ -4844,168 +4828,130 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========================================
     // WEBGL LENS DRIP SHADER
     // ========================================
-    function initLensDripShader() {
-        const canvas = $('lens-drip-canvas');
-        if (!canvas) return;
-        
-        const stage = $('stage');
+   /* --- DRIS_CORE: HQ_CONDENSATION_ENGINE --- */
+/* --- DRIS_CORE: SOVEREIGN_ATMOSPHERE_ENGINE --- */
+
+// 1. Initialize High-Fidelity Seeds for Tiny Droplets
+function initLensDripSeeds() {
+    if (!APP.shaders.lensDrip.seeds) {
+        // High density of tiny droplets for professional condensation look
+        APP.shaders.lensDrip.seeds = Array.from({length: 100}, () => ({
+            x: Math.random(),
+            speed: 0.5 + Math.random() * 2.0, // Natural gravity slide
+            size: 0.8 + Math.random() * 2.2,  // HQ Tiny: under 3px
+            offset: Math.random() * 3000,
+            opacity: 0.2 + Math.random() * 0.5
+        }));
+    }
+}
+
+// 2. Updated Lens Drip - Gravity-based sliding physics
+function animateLensDrip() {
+    if (!APP.shaders.lensDrip.active) {
+        APP.shaders.lensDrip.rafId = null;
+        return;
+    }
+
+    const canvas = $('lens-drip-canvas');
+    const ctx = canvas?.getContext('2d');
+    const stage = $('stage');
+
+    if (!ctx || !stage) return;
+
+    // Sync canvas to stage size for sharp rendering
+    if (canvas.width !== stage.clientWidth) {
         canvas.width = stage.clientWidth;
         canvas.height = stage.clientHeight;
-        
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (!gl) { log('WEBGL_NOT_SUPPORTED'); return; }
-        
-        APP.shaders.lensDrip.canvas = canvas;
-        APP.shaders.lensDrip.gl = gl;
-        
-        // Simple drip distortion effect using 2D canvas fallback
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-            APP.shaders.lensDrip.ctx = ctx;
-        }
-        
-        log('LENS_DRIP_SHADER: INITIALIZED');
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    initLensDripSeeds();
+
+    const time = APP.shaders.lensDrip.time++;
     
-    function toggleLensDrip() {
-        APP.shaders.lensDrip.active = !APP.shaders.lensDrip.active;
-        $('lens-drip-canvas').classList.toggle('active', APP.shaders.lensDrip.active);
-        $('btn-lens-drip').classList.toggle('on', APP.shaders.lensDrip.active);
+    // LIVE BRIDGE: Use Amsterdam Weather Data
+    const intensity = (APP.atmosphere?.intensity || 50) / 100;
+    const windTilt = (APP.weather?.windSpeed || 0) * 0.05;
+
+    APP.shaders.lensDrip.seeds.forEach((drop, i) => {
+        // Draw only what weather intensity allows
+        if (i > Math.floor(100 * intensity)) return;
+
+        // X-Position with subtle wind-drift
+        const x = (drop.x * canvas.width) + (Math.sin(time * 0.005) * windTilt);
+        // Vertical slide using unique gravity speed
+        const y = ((time * drop.speed + drop.offset) % (canvas.height + 150)) - 75;
+        const size = drop.size;
+
+        // HQ REFRACTION: Use 'screen' or 'lighter' for glowing water effect
+        ctx.globalCompositeOperation = 'screen';
         
-        if (APP.shaders.lensDrip.active) {
-            initLensDripShader();
-            animateLensDrip();
-        } else {
-            if (APP.shaders.lensDrip.rafId) cancelAnimationFrame(APP.shaders.lensDrip.rafId);
-        }
-        log('LENS_DRIP: ' + (APP.shaders.lensDrip.active ? 'ON' : 'OFF'));
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
+        gradient.addColorStop(0, `rgba(180, 230, 255, ${drop.opacity * 0.4})`);
+        gradient.addColorStop(0.6, `rgba(100, 160, 255, ${drop.opacity * 0.1})`);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        // Elongated teardrop shape for realistic sliding
+        ctx.ellipse(x, y, size * 0.7, size * 2.1, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // THE GLINT: High-contrast pinpoint for that 4K glass look
+        ctx.fillStyle = `rgba(255, 255, 255, ${drop.opacity * 0.8})`;
+        ctx.beginPath();
+        ctx.arc(x - (size * 0.2), y - (size * 0.6), size * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.globalCompositeOperation = 'source-over';
+    APP.shaders.lensDrip.rafId = requestAnimationFrame(animateLensDrip);
+}
+
+// 3. Process Weather Condition - The Automatic Logic Hinge
+function processWeatherCondition(weatherCode, condition) {
+    const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
+    const isRaining = rainCodes.includes(weatherCode);
+    const temp = APP.atmosphere?.temperature || 20;
+
+    // Update Status HUD
+    if ($('weather-status')) $('weather-status').textContent = 'WEATHER: ' + condition.toUpperCase();
+    if ($('atmos-dot')) $('atmos-dot').classList.toggle('off', !isRaining);
+
+    if (isRaining) {
+        // Toggle Active States
+        APP.shaders.lensDrip.active = true;
+        $('lens-drip-canvas')?.classList.add('active');
+        
+        // Ensure only one RAF loop is running
+        if (!APP.shaders.lensDrip.rafId) animateLensDrip();
+        
+        if ($('weather-fx')) $('weather-fx').textContent = 'FX: LENS_DRIP (HQ_TINY)';
+        log('SYSTEM: WEATHER_AUTO_RAIN_DETECTED');
+    } else {
+        APP.shaders.lensDrip.active = false;
+        $('lens-drip-canvas')?.classList.remove('active');
+        if ($('weather-fx')) $('weather-fx').textContent = 'FX: NONE';
     }
-    
-    function animateLensDrip() {
-        if (!APP.shaders.lensDrip.active) return;
-        
-        const canvas = APP.shaders.lensDrip.canvas;
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw drip effect
-        const time = APP.shaders.lensDrip.time++;
-        const intensity = APP.atmosphere.intensity / 100;
-        
-        for (let i = 0; i < 10 * intensity; i++) {
-            const x = Math.sin(time * 0.02 + i) * canvas.width * 0.3 + canvas.width / 2;
-            const y = (time * 2 + i * 50) % (canvas.height + 100) - 50;
-            const size = 20 + Math.sin(i) * 10;
-            
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-            gradient.addColorStop(0, 'rgba(200, 220, 255, 0.3)');
-            gradient.addColorStop(0.5, 'rgba(180, 200, 240, 0.15)');
-            gradient.addColorStop(1, 'transparent');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.ellipse(x, y, size * 0.6, size, 0, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        APP.shaders.lensDrip.rafId = requestAnimationFrame(animateLensDrip);
+
+    // HEAT HAZE LOGIC
+    if (temp > 30 && !isRaining) {
+        activateHeatHaze(true);
+    } else {
+        activateHeatHaze(false);
     }
-    
-    if ($('btn-lens-drip')) {
-        $('btn-lens-drip').onclick = toggleLensDrip;
-    }
-    
-    // ========================================
-    // WEBGL HEAT HAZE SHADER
-    // ========================================
-    function toggleHeatHaze() {
-        APP.shaders.heatHaze.active = !APP.shaders.heatHaze.active;
-        $('heat-haze-canvas').classList.toggle('active', APP.shaders.heatHaze.active);
-        $('btn-heat-haze').classList.toggle('on', APP.shaders.heatHaze.active);
-        
-        if (APP.shaders.heatHaze.active) {
-            initHeatHazeShader();
-            animateHeatHaze();
-        } else {
-            if (APP.shaders.heatHaze.rafId) cancelAnimationFrame(APP.shaders.heatHaze.rafId);
-        }
-        log('HEAT_HAZE: ' + (APP.shaders.heatHaze.active ? 'ON' : 'OFF'));
-    }
-    
-    function initHeatHazeShader() {
-        const canvas = $('heat-haze-canvas');
-        if (!canvas) return;
-        
-        const stage = $('stage');
-        canvas.width = stage.clientWidth;
-        canvas.height = stage.clientHeight;
-        
-        APP.shaders.heatHaze.canvas = canvas;
-        log('HEAT_HAZE_SHADER: INITIALIZED');
-    }
-    
-    function animateHeatHaze() {
-        if (!APP.shaders.heatHaze.active) return;
-        
-        const canvas = APP.shaders.heatHaze.canvas;
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const time = APP.shaders.heatHaze.time++;
-        const intensity = APP.atmosphere.heatIntensity / 100;
-        
-        // Draw heat distortion waves
-        ctx.save();
-        ctx.globalAlpha = 0.1 * intensity;
-        
-        for (let y = 0; y < canvas.height; y += 20) {
-            const wave = Math.sin(time * 0.05 + y * 0.01) * 5 * intensity;
-            ctx.strokeStyle = `rgba(255, ${200 - y/canvas.height * 100}, 100, ${0.1 * intensity})`;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            for (let x = 0; x < canvas.width; x += 10) {
-                ctx.lineTo(x, y + Math.sin(time * 0.1 + x * 0.02) * wave);
-            }
-            ctx.stroke();
-        }
-        
-        ctx.restore();
-        
-        APP.shaders.heatHaze.rafId = requestAnimationFrame(animateHeatHaze);
-    }
-    
-    if ($('btn-heat-haze')) {
-        $('btn-heat-haze').onclick = toggleHeatHaze;
-    }
-    
-    // Heat intensity slider
-    if ($('sl-heat')) {
-        $('sl-heat').oninput = e => {
-            APP.atmosphere.heatIntensity = parseInt(e.target.value);
-            $('val-heat').textContent = e.target.value + '%';
-        };
-    }
-    
-    // Shatter all button
-    if ($('btn-shatter-all')) {
-        $('btn-shatter-all').onclick = () => {
-            for (let i = 0; i < 5; i++) {
-                const x = Math.random() * window.innerWidth;
-                const y = Math.random() * window.innerHeight;
-                if (typeof createGlassFracture === 'function') createGlassFracture(x, y);
-            }
-            log('SHATTER_ALL: TRIGGERED');
-        };
-    }
+}
+
+// 4. Initialize Core Objects
+APP.shaders = APP.shaders || {
+    lensDrip: { active: false, time: 0, rafId: null, seeds: null },
+    heatHaze: { active: false, time: 0, rafId: null }
+};
+
+APP.weather = APP.weather || {
+    precipitation: 50,
+    windSpeed: 10
+};
     
     // ========================================
     // CAMERA PREVIEW - FLOATING BOX
@@ -5112,46 +5058,44 @@ $('#btn-generate-ai').onclick = async () => {
     const prompt = $('#ai-prompt').value.trim();
     if (!prompt) return;
 
-    // 1. UI FEEDBACK
-    $('#ai-status').textContent = 'GENERATING...';
+    // 1. SYSTEM STATUS
+    $('#ai-status').textContent = 'GENERATING_NEURAL_LINK...';
     $('#neural-dot').className = 'sec-dot blink';
-    log('NEURAL: GENERATING...');
+    log('NEURAL: FETCHING_ASSET...');
 
     try {
-        // 2. FETCH NEURAL ASSET
-        const seed = Math.floor(Math.random() * 1000000);
+        const seed = Math.floor(Math.random() * 999999);
         const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=true`;
 
         const tempImg = new Image();
         tempImg.crossOrigin = "anonymous"; 
-        tempImg.src = aiUrl;
-
+        
         tempImg.onload = () => {
-            // 3. INJECT INTO MEDIA DECK PIPELINE
-            // This is the core 'slam' logic to update the Media Deck
-            APP.media.type = 'image';
-            APP.media.currentElement = tempImg;
+            log('NEURAL: ASSET_RECEIVED');
             
-            // Force engine to switch from Camera to Media
-            APP.state.isLive = false; 
-
-            // 4. UPDATE SYSTEM UI
-            $('#ai-status').textContent = 'NANOFLUX_INJECTED';
-            $('#ai-status').style.color = 'var(--g)';
+            // 2. THE PIPELINE INJECTION
+            // We bypass the file picker and send the image directly to your media loader
+            APP.media.currentElement = tempImg;
+            APP.media.type = 'image';
+            APP.state.isLive = false; // Kill camera feed to show media
+            
+            // 3. UI SYNC
+            $('#ai-status').textContent = 'READY';
             $('#neural-dot').className = 'sec-dot on';
             
-            // Sync with Media Deck label if it exists
-            const trackLabel = $('track-info');
-            if(trackLabel) trackLabel.textContent = "NEURAL_" + seed;
+            // 4. ENGINE TRIGGER
+            // Force the Media Deck UI to show the "AI_GEN" label
+            const mediaLabel = document.querySelector('.current-track-name');
+            if(mediaLabel) mediaLabel.textContent = "NEURAL_INJECT_" + seed;
 
-            log('NEURAL: NANOFLUX_INJECTED');
-            
-            // 5. TRIGGER IMPACT (Optional)
-            if (typeof impactStutter === "function") impactStutter();
+            log('NEURAL: SLAM_COMPLETE');
+            if (typeof triggerGlitch === "function") triggerGlitch();
         };
 
+        tempImg.src = aiUrl;
+
     } catch (err) {
-        log('NEURAL: SIGNAL_LOSS');
+        log('NEURAL: INJECTION_FAILED');
         $('#ai-status').textContent = 'ERROR';
     }
 };
@@ -5382,41 +5326,6 @@ document.addEventListener('click', (e) => {
     if (id === 'btn-end' || id === 'btn-end-live' || id === 'btn-kill') applyAudioDuck(false);
 }, true);
 
-/* --- SOVEREIGN MOBILE ENGINE --- */
-
-// 1. Unified UI Toggle (The Hinge)
-function toggleUI() {
-    // This works with your existing CSS classes
-    const left = document.getElementById('left-panel');
-    const right = document.getElementById('right-panel');
-    const head = document.querySelector('header');
-
-    if (left) left.classList.toggle('ui-stowed-left');
-    if (right) right.classList.toggle('ui-stowed-right');
-    if (head) head.classList.toggle('ui-stowed-up');
-
-    log(left && left.classList.contains('ui-stowed-left') ? "SYSTEM: UI_STOWED" : "SYSTEM: UI_DEPLOYED");
-}
-
-// 2. Orientation & Resize Watcher (The Slam)
-window.addEventListener('resize', () => {
-    // Only trigger the full-screen slam in landscape
-    if (window.innerWidth > window.innerHeight && window.innerWidth < 1024) {
-        const canvas = document.getElementById('vj-canvas'); // Ensure this ID matches yours
-        if (canvas) {
-            canvas.style.width = '100vw';
-            canvas.style.height = '100vh';
-            log("SYSTEM: LANDSCAPE_SLAM_ACTIVE");
-        }
-    }
-});
-
-// 3. Keyboard Trigger (The Trigger)
-document.addEventListener('keydown', (e) => {
-    if (e.key.toUpperCase() === 'H') {
-        e.preventDefault();
-        toggleUI();
-    }
-});</script>
+</script>
 </body>
 </html>
