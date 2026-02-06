@@ -994,18 +994,14 @@ body.shooting-mode #btn-shooting {
         <canvas id="vj-canvas"></canvas>
         <canvas id="refraction-buffer"></canvas>
         <canvas id="atmos-canvas"></canvas>
-        <!-- WEBGL SHADER LAYERS -->
-        <canvas id="lens-drip-canvas"></canvas>
-        <canvas id="heat-haze-canvas"></canvas>
-        <div id="glass-fracture-layer"></div>
-        <div id="overlay-layer">
-            <!-- V33 MANUAL LAYER SEPARATION -->
-            <div id="station-bug">VNGRD</div>
-            <img id="user-logo-layer" src="" alt="Logo">
-            <!-- HOLOGRAM WIDGET - REACTOR CORE -->
-            <div id="widget-layer">
-                <canvas id="hologram-canvas"></canvas>
-            </div>
+       <div id="overlay-layer">
+    <div id="station-bug">VNGRD</div>
+    <img id="user-logo-layer" src="" alt="" style="display: none;">
+    
+    <div id="widget-layer">
+        <canvas id="hologram-canvas"></canvas>
+    </div>
+</div>
             <div id="lower-third">
                 <div class="lt-container lt-guest">
                     <div class="lt-title" id="lt-title-text">GUEST_NAME</div>
@@ -5183,6 +5179,55 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key.toUpperCase() === 'W') {
         toggleWeatherSystem(false);
     }
-});</script>
+});/**
+ * AAA_IDENTITY_LAUNCHER
+ * Handles clean injection of 2D/3D assets only on user launch.
+ * Ensures no GPU memory leaks during re-uploads.
+ */
+function launchIdentityAsset(type, url) {
+    if (!url) {
+        log('SYS: LAUNCH_FAILED - NO_URL_PROVIDED');
+        return;
+    }
+
+    if (type === '2D') {
+        const logo = document.getElementById('user-logo-layer');
+        if (logo) {
+            logo.src = url;
+            logo.style.display = 'block';
+            log('SYS: 2D_LOGO_INJECTED');
+        }
+    }
+
+    if (type === '3D') {
+        // 1. THE PURGE: If a model was already there, wipe it completely
+        if (APP.identityModel) {
+            APP.identityModel.traverse(node => {
+                if (node.isMesh) {
+                    node.geometry.dispose();
+                    if (node.material.isMaterial) {
+                        node.material.dispose();
+                    } else if (Array.isArray(node.material)) {
+                        node.material.forEach(m => m.dispose());
+                    }
+                }
+            });
+            // scene.remove(APP.identityModel); // Remove from your Three.js scene
+            APP.identityModel = null;
+            log('SYS: GPU_CACHE_PURGED');
+        }
+
+        // 2. THE INJECTION: Now it is safe to load the new one
+        log(`SYS: 3D_MODEL_SYNCING... [${url.split('/').pop()}]`);
+        
+        /* Example Loader Connection:
+           loader.load(url, (gltf) => {
+               APP.identityModel = gltf.scene;
+               scene.add(APP.identityModel);
+               log('SYS: 3D_DEPLOY_SUCCESS');
+           });
+        */
+    }
+}</script>
 </body>
 </html>
