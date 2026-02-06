@@ -1342,7 +1342,29 @@ body.shooting-mode #btn-shooting {
     <div id="media-container" style="display:none;"></div>
 
 <script>
+    // --- CORE SYSTEM INITIALIZATION ---
+var APP = APP || {};
+APP.identityModel = null; // Start empty so the 'Delete/X' logic works
+APP.shaders = APP.shaders || {};
+APP.shaders.lensDrip = { active: false, time: 0, rafId: null, seeds: null };
 const $ = id => document.getElementById(id);
+// 2. AAA_READY_CHECK (Gatekeeper)
+window.addEventListener('load', () => {
+    // Check for Three.js in both window and module scope
+    if (typeof THREE !== 'undefined' || window.THREE) {
+        log('SYSTEM: 3D_ENGINE_READY');
+        // If you have a main init for 3D, call it here:
+        // initHologramEngine();
+    } else {
+        log('SYSTEM: WAITING_FOR_THREE_JS...');
+        setTimeout(() => { 
+            if(typeof THREE !== 'undefined') log('SYSTEM: 3D_ENGINE_FINAL_SYNC'); 
+        }, 500);
+    }
+    
+    // Kickstart the Amsterdam Satellite Link
+    initAtmosphere(); 
+});
 
 // --- BROADCAST SAFE DRAG MODULE ---
 function makeLogSafeDraggable(el) {
@@ -5180,28 +5202,21 @@ document.addEventListener('keydown', (e) => {
         toggleWeatherSystem(false);
     }
 });/**
+ /**
  * AAA_IDENTITY_LAUNCHER
- * Handles clean injection of 2D/3D assets only on user launch.
- * Ensures no GPU memory leaks during re-uploads.
+ * Handles clean injection and RE-UPLOAD safety.
  */
 function launchIdentityAsset(type, url) {
-    if (!url) {
-        log('SYS: LAUNCH_FAILED - NO_URL_PROVIDED');
+    // 1. Check if Three.js is actually ready
+    if (typeof THREE === 'undefined') {
+        log('HOLOGRAM: THREE.JS NOT_LOADED');
         return;
     }
 
-    if (type === '2D') {
-        const logo = document.getElementById('user-logo-layer');
-        if (logo) {
-            logo.src = url;
-            logo.style.display = 'block';
-            log('SYS: 2D_LOGO_INJECTED');
-        }
-    }
-
     if (type === '3D') {
-        // 1. THE PURGE: If a model was already there, wipe it completely
+        // THE "X DELETED" FIX: Wipe memory before loading new model
         if (APP.identityModel) {
+            log('SYS: PURGING_PREVIOUS_MODEL...');
             APP.identityModel.traverse(node => {
                 if (node.isMesh) {
                     node.geometry.dispose();
@@ -5212,21 +5227,12 @@ function launchIdentityAsset(type, url) {
                     }
                 }
             });
-            // scene.remove(APP.identityModel); // Remove from your Three.js scene
+            // scene.remove(APP.identityModel); // Clear from your scene
             APP.identityModel = null;
-            log('SYS: GPU_CACHE_PURGED');
         }
 
-        // 2. THE INJECTION: Now it is safe to load the new one
-        log(`SYS: 3D_MODEL_SYNCING... [${url.split('/').pop()}]`);
-        
-        /* Example Loader Connection:
-           loader.load(url, (gltf) => {
-               APP.identityModel = gltf.scene;
-               scene.add(APP.identityModel);
-               log('SYS: 3D_DEPLOY_SUCCESS');
-           });
-        */
+        log('SYS: INJECTING_NEW_MODEL...');
+        // Your actual loader (GLTFLoader, etc.) goes here
     }
 }</script>
 </body>
