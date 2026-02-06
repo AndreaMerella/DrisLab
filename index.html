@@ -410,14 +410,12 @@
         
        /* --- EMERGENCY LENS FIX --- */
 #lens-drip-canvas {
-    position: absolute !important;
+    position: fixed !important; /* Changed from absolute to fixed */
     inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    z-index: 99999 !important; /* Force to the very front layer */
-    pointer-events: none !important;
-    display: block !important;
-    opacity: 1 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important; /* Front of everything */
+    pointer-events: none;
 }
         
         /* HEAT HAZE DISTORTION */
@@ -3920,13 +3918,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ========================================
-    // SATELLITE_ATMOSPHERE_ENGINE
-    // GEO_HANDSHAKE + OPEN-METEO API + REFRACTIVE RAIN
-    // ========================================
-    
-    /* --- DRIS_CORE: SOVEREIGN_ATMOSPHERE_ENGINE --- */
+// SATELLITE_ATMOSPHERE_ENGINE
+// GEO_HANDSHAKE + OPEN-METEO API + AAA REFRACTIVE RAIN
+// ========================================
 
-// 1. Unified Canvas & Buffer Initialization
 /* --- DRIS_CORE: SOVEREIGN_ATMOSPHERE_ENGINE --- */
 
 // 1. Unified Canvas & Buffer Initialization
@@ -3941,7 +3936,7 @@ function initAtmosphereCanvas() {
         APP.atmosphere.canvas.height = stage.clientHeight;
     }
     
-    // Bridge to VJ_ENGINE for refraction effects
+    // Bridge to VJ_ENGINE for AAA refraction effects
     if (APP.atmosphere.refractionCanvas && APP.render?.canvas) {
         APP.atmosphere.refractionCtx = APP.atmosphere.refractionCanvas.getContext('2d');
         APP.atmosphere.refractionCanvas.width = APP.render.canvas.width;
@@ -3981,7 +3976,7 @@ async function initAtmosphere() {
                     APP.atmosphere.longitude = data.longitude;
                     APP.atmosphere.city = data.city.toUpperCase();
                 } catch (e) {
-                    APP.atmosphere.latitude = 52.37; // Amsterdam
+                    APP.atmosphere.latitude = 52.37; // Amsterdam Default
                     APP.atmosphere.longitude = 4.89;
                 }
                 await fetchSatelliteWeather();
@@ -4039,62 +4034,79 @@ function updateTickerWithMetar() {
     }
 }
 
-// 5. HQ_LENS_DRIP: The gravity-sliding engine
+// 5. AAA_REFRACTIVE_LENS_ENGINE
 function initLensDripSeeds() {
     if (!APP.shaders.lensDrip.seeds) {
-        APP.shaders.lensDrip.seeds = Array.from({length: 80}, () => ({
+        APP.shaders.lensDrip.seeds = Array.from({length: 120}, () => ({
             x: Math.random(),
-            speed: 0.5 + Math.random() * 2.0,
-            size: 0.8 + Math.random() * 2.5, // HQ Tiny Drops
-            offset: Math.random() * 3000,
-            opacity: 0.2 + Math.random() * 0.5
+            speed: 0.4 + Math.random() * 1.8,
+            size: 0.7 + Math.random() * 2.3, 
+            offset: Math.random() * 5000,
+            opacity: 0.15 + Math.random() * 0.4,
+            refraction: 1.05 + Math.random() * 0.15 
         }));
     }
 }
 
 function animateLensDrip() {
     if (!APP.shaders.lensDrip.active) return;
+    
     const canvas = $('lens-drip-canvas');
     const ctx = canvas?.getContext('2d');
-    if (canvas && canvas.width === 0) {
+    const vjCanvas = $('vj-canvas'); 
+
+    if (canvas && (canvas.width !== window.innerWidth)) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
 
-    if (!ctx) return;
-    
+    if (!ctx || !vjCanvas) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     initLensDripSeeds();
 
     const time = APP.shaders.lensDrip.time++;
-    const intensity = (APP.atmosphere.isRaining ? 80 : 0) / 100;
-    const windTilt = (APP.weather.windSpeed || 0) * 0.05;
+    const intensity = (APP.atmosphere.isRaining ? (APP.atmosphere.intensity || 80) : 0) / 100;
+    const wind = (APP.weather.windSpeed || 0) * 0.04;
 
     APP.shaders.lensDrip.seeds.forEach((drop, i) => {
-        if (i > Math.floor(80 * intensity)) return;
+        if (i > Math.floor(120 * intensity)) return;
 
-        const x = (drop.x * canvas.width) + (Math.sin(time * 0.005) * windTilt);
-        const y = ((time * drop.speed + drop.offset) % (canvas.height + 150)) - 75;
+        const x = (drop.x * canvas.width) + (Math.sin(time * 0.004) * wind);
+        const y = ((time * drop.speed + drop.offset) % (canvas.height + 200)) - 100;
         const size = drop.size;
 
-        ctx.globalCompositeOperation = 'screen';
-        const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 2.5);
-        grad.addColorStop(0, `rgba(180, 230, 255, ${drop.opacity})`);
-        grad.addColorStop(1, 'transparent');
-
-        ctx.fillStyle = grad;
+        // --- STEP 1: THE REFRACTION (AAA PIXEL WARP) ---
+        ctx.save();
         ctx.beginPath();
-        ctx.ellipse(x, y, size * 0.7, size * 2.2, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y, size * 0.8, size * 2.5, 0, 0, Math.PI * 2);
+        ctx.clip(); 
+
+        const sourceX = (x / canvas.width) * vjCanvas.width;
+        const sourceY = (y / canvas.height) * vjCanvas.height;
+        ctx.drawImage(
+            vjCanvas, 
+            sourceX - 10, sourceY - 10, 20, 20, 
+            x - size, y - size * 2, size * 2 * drop.refraction, size * 4 * drop.refraction 
+        );
+        ctx.restore();
+
+        // --- STEP 2: THE SURFACE (SPECULAR HIGHLIGHTS) ---
+        ctx.globalCompositeOperation = 'screen';
+        
+        const bodyGrad = ctx.createRadialGradient(x, y, 0, x, y, size * 3);
+        bodyGrad.addColorStop(0, `rgba(150, 200, 255, ${drop.opacity * 0.3})`);
+        bodyGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = bodyGrad;
         ctx.fill();
 
-        // SPECULAR GLINT
-        ctx.fillStyle = `rgba(255, 255, 255, ${drop.opacity * 0.7})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${drop.opacity * 0.8})`;
         ctx.beginPath();
-        ctx.arc(x - (size * 0.2), y - (size * 0.6), size * 0.15, 0, Math.PI * 2);
+        ctx.arc(x - (size * 0.3), y - (size * 0.8), size * 0.25, 0, Math.PI * 2);
         ctx.fill();
     });
 
+    ctx.globalCompositeOperation = 'source-over';
     APP.shaders.lensDrip.rafId = requestAnimationFrame(animateLensDrip);
 }
 
@@ -4102,7 +4114,6 @@ function animateLensDrip() {
 function processWeatherCondition(weatherCode, condition) {
     const isRaining = [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
     
-    // Update UI Status
     const status = $('weather-status');
     if (status) status.textContent = 'WEATHER: ' + condition.toUpperCase();
     $('atmos-dot')?.classList.toggle('off', !isRaining);
@@ -4117,14 +4128,18 @@ function processWeatherCondition(weatherCode, condition) {
         APP.shaders.lensDrip.active = false;
         $('lens-drip-canvas')?.classList.remove('active');
         if (APP.shaders.lensDrip.rafId) cancelAnimationFrame(APP.shaders.lensDrip.rafId);
+        APP.shaders.lensDrip.rafId = null;
     }
 }
 
-// Global Initialization
-APP.shaders = APP.shaders || { lensDrip: { active: false, time: 0, rafId: null, seeds: null } };
+// Global Initialization Check
+APP.shaders = APP.shaders || {};
+APP.shaders.lensDrip = APP.shaders.lensDrip || { active: false, time: 0, rafId: null, seeds: null };
 APP.weather = APP.weather || { windSpeed: 0 };
-APP.atmosphere = APP.atmosphere || { isRaining: false, city: "AMSTERDAM", temperature: 0 };
+APP.atmosphere = APP.atmosphere || { isRaining: false, city: "AMSTERDAM", temperature: 0, rainDrops: [], intensity: 80 };
 
+// Kickstart
+initAtmosphere();
 initAtmosphere();
     
     // HEAT HAZE EFFECT - Thermal distortion during hot weather
@@ -5122,6 +5137,7 @@ const applyAudioDuck = (isActive) => {
 };
 
 // 3. EVENT INTERCEPTOR (Priority Phase)
+// 3. EVENT INTERCEPTOR (Priority Phase)
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -5131,6 +5147,42 @@ document.addEventListener('click', (e) => {
     if (id === 'btn-end' || id === 'btn-end-live' || id === 'btn-kill') applyAudioDuck(false);
 }, true);
 
-</script>
+// FIXED: Removed the stray '/' and ensured clean state management
+function toggleWeatherSystem(forceState = null) {
+    const currentState = forceState !== null ? forceState : !APP.shaders.lensDrip.active;
+    
+    APP.shaders.lensDrip.active = currentState;
+    
+    const canvas = document.getElementById('lens-drip-canvas');
+    if (canvas) {
+        canvas.style.display = currentState ? 'block' : 'none';
+        if (!currentState) {
+            // STOP the loop and clear the glass
+            if (APP.shaders.lensDrip.rafId) cancelAnimationFrame(APP.shaders.lensDrip.rafId);
+            APP.shaders.lensDrip.rafId = null;
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+            // RE-START if forced back on
+            animateLensDrip();
+        }
+    }
+    
+    log(`SYSTEM: WEATHER_FX_${currentState ? 'ACTIVATED' : 'BYPASSED'}`);
+}
+
+// Shortcut: Press 'ESC' or 'W' to kill the rain immediately
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key.toUpperCase() === 'W') {
+        toggleWeatherSystem(false);
+    }
+}); // Fixed: Added missing closing brackets
+
+// Shortcut: Press 'ESC' or 'W' to kill the rain immediately
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key.toUpperCase() === 'W') {
+        toggleWeatherSystem(false);
+    }
+});</script>
 </body>
 </html>
