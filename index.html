@@ -692,6 +692,76 @@
         .social-links a:hover {
             text-shadow: 0 0 10px #00ff85;
         }
+        /* ═══ VNGRD // NOIZE instrument (ported) ═══ */
+        .ss-card[data-card-id="noize"] { --acc: #ff2266; --acc-rgb: 255,34,102; --acc-dim: rgba(255,34,102,.14); }
+        #noize-status-wrap {
+            border-bottom: 1px solid rgba(255,51,136,.14);
+            margin: 0 0 8px; padding: 5px 12px;
+            background: rgba(255,51,136,.05);
+        }
+        #noize-status {
+            font-size: 11px; color: var(--acc, #ff3388); letter-spacing: 1.5px;
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 8px rgba(255,51,136,.5);
+        }
+        .noize-chaos-full {
+            display: block; width: 100%; margin: 0 0 10px; padding: 12px 4px;
+            font-family: 'Bebas Neue', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 4px;
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255,51,136,.22) 0%, rgba(0,0,0,.5) 100%);
+            border: 1px solid var(--acc, #ff3388);
+            border-radius: 3px; cursor: pointer; text-align: center; transition: all .12s ease;
+            box-shadow: 0 0 16px rgba(255,51,136,.35), inset 0 1px 0 rgba(255,255,255,.08);
+        }
+        .noize-chaos-full:hover { box-shadow: 0 0 30px rgba(255,51,136,.55), inset 0 0 14px rgba(255,255,255,.08); transform: translateY(-1px); }
+        .noize-chaos-full:active { transform: translateY(1px) scale(.98); }
+        .noize-params { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .noize-row { display: flex; align-items: center; gap: 8px; min-height: 22px; }
+        .noize-lbl { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,.45); width: 32px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+        .noize-select {
+            flex: 1; height: 26px; padding: 0 6px;
+            background: rgba(0,0,0,.55); border: 1px solid rgba(255,51,136,.22);
+            color: var(--acc, #ff3388); font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            border-radius: 2px; cursor: pointer; outline: none;
+            appearance: none; -webkit-appearance: none;
+        }
+        .noize-select:focus { border-color: var(--acc, #ff3388); box-shadow: 0 0 6px rgba(255,51,136,.3); }
+        .noize-root-sel { max-width: 60px; flex: none; }
+        .noize-kit-sel  { flex: 1; min-width: 0; }
+        .noize-morph    { font-size: 9px; letter-spacing: 1px; padding: 0 8px; flex-shrink: 0; width: auto; }
+        .noize-morph.on { background: rgba(255,51,136,.18) !important; color: var(--acc,#ff3388) !important; border-color: rgba(255,51,136,.55) !important; box-shadow: 0 0 8px rgba(255,51,136,.25); }
+        .noize-slider { flex: 1; height: 4px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,.12); border-radius: 2px; cursor: pointer; }
+        .noize-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--acc, #ff3388); box-shadow: 0 0 6px rgba(255,51,136,.5); cursor: pointer; }
+        .noize-slider::-moz-range-thumb { width: 14px; height: 14px; border: none; border-radius: 50%; background: var(--acc, #ff3388); cursor: pointer; }
+        #noize-layers { display: flex; flex-direction: column; gap: 5px; margin: 10px 0; }
+        .noize-layer { display: flex; align-items: center; gap: 6px; }
+        .noize-layer-role { font-size: 10px; letter-spacing: .5px; color: rgba(255,255,255,.55); width: 70px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+        .noize-eng {
+            flex: 1; padding: 6px 2px; font-size: 11px; letter-spacing: 1px;
+            font-family: 'JetBrains Mono', monospace; color: var(--acc, #ff3388);
+            background: rgba(0,0,0,.35); border: 1px solid rgba(255,51,136,.2);
+            border-radius: 2px; cursor: pointer; text-align: center; transition: all .12s;
+        }
+        .noize-eng:hover { background: rgba(255,51,136,.15); color: #fff; }
+        .noize-viz { display: none; }
+        .noize-mini {
+            width: 24px; height: 24px; padding: 0; font-size: 10px; line-height: 1;
+            font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,.4);
+            background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12);
+            border-radius: 2px; cursor: pointer; transition: all .12s; flex-shrink: 0;
+        }
+        .noize-mini:hover { color: #fff; border-color: rgba(255,255,255,.35); }
+        .noize-mini.on { color: #fff; background: var(--acc, #ff3388); border-color: var(--acc, #ff3388); box-shadow: 0 0 6px rgba(255,51,136,.5); }
+        #noize-mute-0.on, #noize-mute-1.on, #noize-mute-2.on, #noize-mute-3.on { background: #ff3333; border-color: #ff3333; box-shadow: 0 0 6px rgba(255,51,51,.5); color: #fff; }
+        #noize-scenes { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+        .noize-scene {
+            flex: 1; min-width: 28px; padding: 6px 0; font-size: 11px;
+            font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,.35);
+            background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.1);
+            border-radius: 2px; cursor: pointer; transition: all .12s; text-align: center;
+        }
+        .noize-scene:hover { color: #fff; border-color: rgba(255,51,136,.4); }
+        .noize-scene.filled { color: var(--acc, #ff3388); border-color: var(--acc, #ff3388); box-shadow: inset 0 0 8px rgba(255,51,136,.2); }
     </style>
 </head>
 <body style="cursor: none;">
@@ -737,83 +807,22 @@
     </div>
 
     <div class="container">
-        <!-- ============ NOISE INSTRUMENT (HERO) ============ -->
-        <div class="section" style="border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(0,255,133,0.08);">
-            <div class="section-title" style="font-size: 28px;">◆ NOISE INSTRUMENT</div>
-            <div class="section-subtitle">A performable noise synth. Sculpt with the macros, perform on the XY pad, or drive it from code.</div>
+        <!-- ============ VNGRD // NOIZE — real instrument ported from Vanguard ============ -->
+        <div class="section ss-card" data-card-id="noize" style="border: 1px solid #ff2266; box-shadow: 0 0 34px rgba(255,34,102,0.12);">
+            <div class="section-title" style="font-size: 28px; color: #ff2266;">VNGRD // NOIZE</div>
+            <div class="section-subtitle">Generative audiovisual instrument · 12 synthesis engines · euclidean layers · CHAOS randomises everything.</div>
 
-            <!-- Noise color selector -->
-            <div class="controls" style="margin-bottom: 20px;">
-                <span class="label">COLOR:</span>
-                <button class="btn" onclick="STUDIO.setNoiseType('white')">WHITE</button>
-                <button class="btn active" onclick="STUDIO.setNoiseType('pink')">PINK</button>
-                <button class="btn" onclick="STUDIO.setNoiseType('brown')">BROWN</button>
-                <button class="btn" onclick="STUDIO.setNoiseType('crackle')">CRACKLE</button>
-                <button class="btn" id="noise-trigger-btn" onclick="STUDIO.playNoiseVoice()">▶ HIT</button>
-                <button class="btn" id="noise-drone-btn" onclick="STUDIO.toggleNoiseDrone()">DRONE</button>
+            <div class="controls" style="margin-bottom: 14px;">
+                <button class="btn" id="noize-play-btn" onclick="DRIS_NOIZE_toggle()" style="min-width: 160px; border-color: #ff2266; color: #ff2266;">▶ PLAY</button>
+                <span class="section-subtitle" style="margin: 0;">Press PLAY, then hit CHAOS. Lock layers (L), mute (M), load samples (+), save scenes.</span>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start;">
-                <!-- Macro sliders -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;">
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">CUTOFF <b id="noise-cutoff-val">1200</b> Hz</span>
-                        <input type="range" id="noise-cutoff" min="40" max="18000" value="1200" oninput="STUDIO.setNoiseCutoff(this.value)">
-                    </div>
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">RESONANCE <b id="noise-res-val">6.0</b></span>
-                        <input type="range" id="noise-res" min="0.5" max="28" step="0.1" value="6" oninput="STUDIO.setNoiseRes(this.value)">
-                    </div>
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">DRIVE <b id="noise-drive-val">15</b></span>
-                        <input type="range" id="noise-drive" min="0" max="100" value="15" oninput="STUDIO.setNoiseDrive(this.value)">
-                    </div>
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">SPACE <b id="noise-space-val">35</b></span>
-                        <input type="range" id="noise-space" min="0" max="100" value="35" oninput="STUDIO.setNoiseSpace(this.value)">
-                    </div>
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">MOTION <b id="noise-motion-val">25</b></span>
-                        <input type="range" id="noise-motion" min="0" max="100" value="25" oninput="STUDIO.setNoiseMotion(this.value)">
-                    </div>
-                    <div class="control-group" style="flex-direction: column; align-items: stretch;">
-                        <span class="label">LEVEL <b id="noise-level-val">70</b></span>
-                        <input type="range" id="noise-level" min="0" max="100" value="70" oninput="STUDIO.setNoiseLevel(this.value)">
-                    </div>
-                </div>
-
-                <!-- XY performance pad -->
-                <div>
-                    <div class="label" style="margin-bottom: 6px;">XY PAD · X=cutoff · Y=resonance</div>
-                    <div id="noise-xy" style="position: relative; width: 100%; height: 220px; background:
-                        radial-gradient(circle at 30% 30%, rgba(0,255,133,0.12), transparent 60%),
-                        repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 22px),
-                        repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 22px);
-                        border: 1px solid var(--accent); border-radius: 6px; cursor: crosshair; touch-action: none;"
-                        onpointerdown="STUDIO.noiseXY(event.offsetX/this.clientWidth, 1-event.offsetY/this.clientHeight)"
-                        onpointermove="if(event.buttons===1)STUDIO.noiseXY(event.offsetX/this.clientWidth, 1-event.offsetY/this.clientHeight)">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Patch launcher tied to the live coder below -->
-            <div class="controls" style="margin-top: 22px;">
-                <span class="label">PATCH:</span>
-                <select class="btn" id="noise-patch" onchange="STUDIO.loadNoisePatch(this.value)">
-                    <option value="init">START HERE</option>
-                    <option value="rumble">SUB RUMBLE</option>
-                    <option value="glitch">GLITCH</option>
-                    <option value="sweep">RISER SWEEP</option>
-                    <option value="rain">STORM</option>
-                </select>
-                <button class="btn" onclick="STUDIO.executeCode()">▶ RUN PATCH</button>
-                <button class="btn" onclick="STUDIO.stopCode()">■ STOP</button>
-                <span class="section-subtitle" style="margin: 0;">Loads into the Live Coding editor below</span>
-            </div>
+            <!-- The NOIZE engine renders its full control surface into this mount -->
+            <div id="noize-mount"></div>
         </div>
 
         <!-- ============ CLASSIC MODULES ============ -->
-        <div class="section-title" style="opacity: 0.5; font-size: 18px; margin-top: 30px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 20px;">▾ CLASSIC MODULES · drums · bass · synth · midi</div>
+        <div class="section-title" style="opacity: 0.5; font-size: 18px; margin-top: 30px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 20px;">▾ CLASSIC MODULES · drums · bass · synth · live-code · midi</div>
 
         <!-- DRUM MACHINE -->
         <div class="section">
@@ -6307,5 +6316,1053 @@ loop(32, () => {
             console.log('DOM loaded, DRIS ready');
         });
     </script>
+    <!-- ═══ VNGRD // NOIZE — generative instrument ported from vngrd-core ═══ -->
+    <script>
+    // Host shim: the engine expects an APP global (visual + audio buses) and an
+    // optional log(). SonicSuite references inside the engine are typeof-guarded,
+    // so it runs standalone. APP.vj is inert here; it can later be wired to MOTION_AI.
+    window.APP = window.APP || {};
+    if (!window.APP.vj) window.APP.vj = {};
+    if (!window.APP.audio) window.APP.audio = {};
+    if (typeof window.log !== 'function') window.log = function(){};
+    </script>
+    <script>
+// ═══════════════════════════════════════════════════════════════════════════
+// VNGRD// NOIZE — Generative audiovisual instrument
+// ---------------------------------------------------------------------------
+// One button (CHAOS) randomises 4 synthesis layers, each running its own
+// euclidean rhythm, pitch-locked to a musical scale. Every audio pulse is
+// ALSO a visual pulse — layers drive brightness / hue / saturation / contrast
+// on the VJ canvas in real time.
+//
+// ANTI-LAG CONTRACT (do not violate):
+//   1. Audio is scheduled with a LOOKAHEAD SCHEDULER (setInterval timer that
+//      queues notes ~100ms ahead via AudioContext.currentTime). Once queued,
+//      Web Audio plays them on its own audio thread — immune to main-thread jank.
+//   2. Visuals only READ state that the audio scheduler WROTE. Coupling is
+//      one-directional. A late frame delays a flash by ms; audio never stutters.
+//   3. Oscillators are created/scheduled/auto-stopped per note. No held graphs.
+//
+// Globals used: APP, log, igniteAudio, ensureAudioChain  (from main.js)
+// Attaches: window.NOIZE
+// ═══════════════════════════════════════════════════════════════════════════
+(function () {
+    'use strict';
+
+    var byId = function (id) { return document.getElementById(id); };
+    var L = function (m) { if (typeof log === 'function') log(m); };
+
+    // ── Musical scales (semitone offsets within an octave) ──────────────────
+    var SCALES = {
+        'MAJOR':            [0, 2, 4, 5, 7, 9, 11],
+        'MINOR':            [0, 2, 3, 5, 7, 8, 10],
+        'PENTA MAJOR':      [0, 2, 4, 7, 9],
+        'PENTA MINOR':      [0, 3, 5, 7, 10],
+        'DORIAN':           [0, 2, 3, 5, 7, 9, 10],
+        'PHRYGIAN':         [0, 1, 3, 5, 7, 8, 10],
+        'LYDIAN':           [0, 2, 4, 6, 7, 9, 11],
+        'MIXOLYDIAN':       [0, 2, 4, 5, 7, 9, 10],
+        'LOCRIAN':          [0, 1, 3, 5, 6, 8, 10],
+        'HARMONIC MINOR':   [0, 2, 3, 5, 7, 8, 11],
+        'MELODIC MINOR':    [0, 2, 3, 5, 7, 9, 11],
+        'WHOLE TONE':       [0, 2, 4, 6, 8, 10],
+        'DIMINISHED':       [0, 2, 3, 5, 6, 8, 9, 11],
+        'BLUES':            [0, 3, 5, 6, 7, 10],
+        'JAPANESE':         [0, 1, 5, 7, 8],
+        'HUNGARIAN MINOR':  [0, 2, 3, 6, 7, 8, 11],
+        'SPANISH':          [0, 1, 4, 5, 7, 8, 10],
+        'ENIGMATIC':        [0, 1, 4, 6, 8, 10, 11],
+        'NEAPOLITAN':       [0, 1, 3, 5, 7, 9, 11],
+        'YO':               [0, 2, 5, 7, 9]
+    };
+    var SCALE_NAMES = Object.keys(SCALES);
+    var NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+    var ENGINES = ['SUBTRACTIVE', 'FM', 'SUPERSAW', 'ACID', 'NOISE', 'KARPLUS', 'ADDITIVE', 'GRANULAR', 'FM4OP', 'TAPE', 'BINAURAL', 'BUFFER'];
+
+    // Layer roles — fixed slots, give the music a coherent register spread.
+    // viz = which canvas parameter this layer modulates.
+    var LAYER_ROLES = [
+        { name: 'BASS',    octave: -2, viz: 'bright',   vizLabel: 'BRIGHT' },
+        { name: 'CHORD',   octave:  0, viz: 'hue',      vizLabel: 'HUE'    },
+        { name: 'LEAD',    octave:  1, viz: 'sat',      vizLabel: 'SAT'    },
+        { name: 'TEXTURE', octave:  0, viz: 'contrast', vizLabel: 'CONTR'  }
+    ];
+
+    // ── State ───────────────────────────────────────────────────────────────
+    var S = {
+        active: false,
+        bpm: 124,
+        scaleName: 'PHRYGIAN',
+        rootNote: 50,                 // MIDI note (D3)
+        masterGain: 1.0,
+        reverbMix: 0.35,
+        attackMult: 0.5,    // 0.01–1.0: envelope attack multiplier for all layers
+        morph: false,                 // morph mode: chaos blends instead of jumping
+        kitName: 'FREE',              // active kit preset name
+        density: 5,                   // 1–9: overall euclidean pulse density
+        layers: [],                   // per-layer param objects
+        scenes: [null, null, null, null, null, null, null, null],
+        // scheduler
+        ctx: null,
+        nextStepTime: 0,
+        stepIndex: 0,
+        timerId: null,
+        lookahead: 25,                // ms — setInterval period
+        scheduleAhead: 0.10,          // s — how far ahead to queue audio
+        // audio bus
+        rndBus: null, dryGain: null, wetGain: null, convolver: null,
+        noiseBuf: null,
+        // visual coupling
+        vizQueue: [],                 // {t, viz, amount}
+        flashUntil: 0,
+        rafId: null,
+        pendingScene: null            // recall applied at next bar boundary
+    };
+
+    // ── Math helpers ─────────────────────────────────────────────────────────
+    function mtof(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function rndInt(a, b) { return Math.floor(rnd(a, b + 1)); }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // Bjorklund euclidean rhythm → boolean array of length `steps`, `pulses` hits.
+    function euclid(pulses, steps) {
+        pulses = Math.max(0, Math.min(pulses, steps));
+        if (pulses === 0) { var z = []; for (var i = 0; i < steps; i++) z.push(false); return z; }
+        if (pulses === steps) { var f = []; for (var j = 0; j < steps; j++) f.push(true); return f; }
+        var pattern = [], counts = [], remainders = [];
+        var divisor = steps - pulses;
+        remainders.push(pulses);
+        var level = 0;
+        while (true) {
+            counts.push(Math.floor(divisor / remainders[level]));
+            remainders.push(divisor % remainders[level]);
+            divisor = remainders[level];
+            level++;
+            if (remainders[level] <= 1) break;
+        }
+        counts.push(divisor);
+        function build(lvl) {
+            if (lvl === -1) pattern.push(false);
+            else if (lvl === -2) pattern.push(true);
+            else {
+                for (var k = 0; k < counts[lvl]; k++) build(lvl - 1);
+                if (remainders[lvl] !== 0) build(lvl - 2);
+            }
+        }
+        build(level);
+        // rotate so the sequence starts on a hit
+        var idx = pattern.indexOf(true);
+        if (idx > 0) pattern = pattern.slice(idx).concat(pattern.slice(0, idx));
+        // normalise length
+        while (pattern.length < steps) pattern.push(false);
+        return pattern.slice(0, steps);
+    }
+
+    function getNoiseBuffer(ctx) {
+        if (S.noiseBuf) return S.noiseBuf;
+        var len = ctx.sampleRate * 2;
+        var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        S.noiseBuf = buf;
+        return buf;
+    }
+
+    // Synthetic impulse response — decaying noise, ~1.4s. Built once, reused.
+    function buildReverbIR(ctx) {
+        var dur = 1.4, len = Math.floor(ctx.sampleRate * dur);
+        var ir = ctx.createBuffer(2, len, ctx.sampleRate);
+        for (var ch = 0; ch < 2; ch++) {
+            var d = ir.getChannelData(ch);
+            for (var i = 0; i < len; i++) {
+                var decay = Math.pow(1 - i / len, 2.4);
+                d[i] = (Math.random() * 2 - 1) * decay;
+            }
+        }
+        return ir;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SYNTHESIS ENGINES — each schedules a single voice at absolute time `t`,
+    // connects to `dest`, and auto-stops. No global state, no leaks.
+    // ─────────────────────────────────────────────────────────────────────────
+    function adsr(ctx, g, t, a, d, s, r, dur, peak) {
+        g.gain.cancelScheduledValues(t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(peak, t + a);
+        g.gain.linearRampToValueAtTime(Math.max(0.0001, peak * s), t + a + d);
+        g.gain.setValueAtTime(Math.max(0.0001, peak * s), t + Math.max(a + d, dur));
+        g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(a + d, dur) + r);
+    }
+
+    function voiceSubtractive(ctx, dest, freq, t, dur, vel, p) {
+        var osc = ctx.createOscillator();
+        osc.type = p.wave || 'sawtooth';
+        osc.frequency.value = freq;
+        var lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.Q.value = Math.min(p.q || 4, 6);
+        var co = (p.cutoff || 1800);
+        lp.frequency.setValueAtTime(co, t);
+        lp.frequency.exponentialRampToValueAtTime(Math.max(120, co * 0.4), t + dur);
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.005, dur * 0.4, 0.5, 0.12, dur, vel);
+        osc.connect(lp).connect(g).connect(dest);
+        osc.start(t); osc.stop(t + dur + 0.2);
+    }
+
+    function voiceFM(ctx, dest, freq, t, dur, vel, p) {
+        var carrier = ctx.createOscillator(); carrier.frequency.value = freq;
+        var mod = ctx.createOscillator(); mod.frequency.value = freq * (p.ratio || 2);
+        // Cap modulation depth — freq * index gets extreme at low bass frequencies
+        var modGain = ctx.createGain(); modGain.gain.value = Math.min(freq * (p.index || 3), freq * 3.5);
+        mod.connect(modGain).connect(carrier.frequency);
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.004, dur * 0.5, 0.4, 0.15, dur, vel * 0.9);
+        carrier.connect(g).connect(dest);
+        carrier.start(t); mod.start(t);
+        carrier.stop(t + dur + 0.25); mod.stop(t + dur + 0.25);
+    }
+
+    function voiceSupersaw(ctx, dest, freq, t, dur, vel, p) {
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.01, dur * 0.5, 0.6, 0.2, dur, vel * 0.55);
+        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = p.cutoff || 4000; lp.Q.value = 0.7;
+        var det = p.detune || 14, n = 5;
+        // Normalise per-oscillator so 5 saws don't sum to 5× amplitude
+        var normGain = 1 / n;
+        for (var i = 0; i < n; i++) {
+            var o = ctx.createOscillator(); o.type = 'sawtooth';
+            o.frequency.value = freq;
+            o.detune.value = (i - (n - 1) / 2) * det;
+            var og = ctx.createGain(); og.gain.value = normGain;
+            o.connect(og).connect(lp); o.start(t); o.stop(t + dur + 0.25);
+        }
+        lp.connect(g).connect(dest);
+    }
+
+    function voiceAcid(ctx, dest, freq, t, dur, vel, p) {
+        var osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = freq;
+        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass';
+        lp.Q.value = Math.min(p.q || 8, 7);   // cap Q — above 7 the filter self-resonates
+        var co = Math.min(p.cutoff || 1200, 3200);
+        var accent = p.accent ? 1.7 : 1.3;    // was 2.2/1.4 — too aggressive
+        lp.frequency.setValueAtTime(co * accent, t);
+        lp.frequency.exponentialRampToValueAtTime(Math.max(200, co * 0.35), t + dur * 0.9);
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.003, dur * 0.3, 0.3, 0.08, dur, vel * 0.8);
+        osc.connect(lp).connect(g).connect(dest);
+        osc.start(t); osc.stop(t + dur + 0.15);
+    }
+
+    function voiceNoise(ctx, dest, freq, t, dur, vel, p) {
+        var src = ctx.createBufferSource(); src.buffer = getNoiseBuffer(ctx);
+        src.loop = true; src.playbackRate.value = rnd(0.8, 1.2);
+        var bp = ctx.createBiquadFilter(); bp.type = p.band || 'bandpass';
+        bp.frequency.value = freq * (p.fmul || 4); bp.Q.value = p.q || 6;
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.002, dur * 0.4, 0.2, 0.1, dur, vel * 0.6);
+        src.connect(bp).connect(g).connect(dest);
+        src.start(t); src.stop(t + dur + 0.15);
+    }
+
+    function voiceKarplus(ctx, dest, freq, t, dur, vel, p) {
+        // Plucked-string approximation: short noise burst → feedback delay (1/freq)
+        // through a damping lowpass. Stable for freq down to ~50Hz.
+        var period = 1 / Math.max(50, freq);
+        var burst = ctx.createBufferSource(); burst.buffer = getNoiseBuffer(ctx);
+        var burstGain = ctx.createGain();
+        burstGain.gain.setValueAtTime(vel * 0.7, t);
+        burstGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+        var delay = ctx.createDelay(0.05); delay.delayTime.value = period;
+        // Feedback coefficient capped at 0.9 AND ramped to zero over the note.
+        // A static high coefficient lets overlapping Karplus plucks stack into
+        // a runaway resonant drone — the main source of deafening feedback on bass layers.
+        var fb = ctx.createGain();
+        var fbCoef = Math.min(p.damp || 0.9, 0.9);
+        fb.gain.setValueAtTime(fbCoef, t);
+        fb.gain.linearRampToValueAtTime(0.0001, t + dur + 0.4);
+        var damp = ctx.createBiquadFilter(); damp.type = 'lowpass'; damp.frequency.value = Math.min(8000, freq * 8);
+        var out = ctx.createGain();
+        adsr(ctx, out, t, 0.001, dur, 0.7, 0.25, dur, 1.0);
+        burst.connect(burstGain).connect(delay);
+        delay.connect(damp).connect(fb).connect(delay);   // feedback loop
+        delay.connect(out).connect(dest);
+        burst.start(t); burst.stop(t + 0.04);
+        // tear down the feedback loop after the note rings out
+        setTimeout(function () { try { fb.disconnect(); delay.disconnect(); damp.disconnect(); } catch (e) {} }, (dur + 0.6) * 1000 + (t - ctx.currentTime) * 1000);
+    }
+
+    function voiceAdditive(ctx, dest, freq, t, dur, vel, p) {
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.02, dur * 0.6, 0.5, 0.3, dur, vel * 0.35);
+        var partials = p.partials || 6;
+        for (var i = 1; i <= partials; i++) {
+            var o = ctx.createOscillator(); o.type = 'sine';
+            o.frequency.value = freq * i;
+            var pg = ctx.createGain(); pg.gain.value = 1 / (i * 1.4);
+            o.connect(pg).connect(g);
+            o.start(t); o.stop(t + dur + 0.35);
+        }
+        g.connect(dest);
+    }
+
+    // ── GRANULAR — micro-grain scatter over the note duration ──────────────────
+    function voiceGranular(ctx, dest, freq, t, dur, vel, p) {
+        var grainCount = p.grains || 9;
+        var noiseBuf = getNoiseBuffer(ctx);
+        var mix = ctx.createGain();
+        adsr(ctx, mix, t, 0.025, dur * 0.35, 0.55, 0.4, dur, vel * 0.45);
+        mix.connect(dest);
+        for (var i = 0; i < grainCount; i++) {
+            var gOff  = rnd(0, dur * 0.85);
+            var gDur  = rnd(0.018, 0.075);
+            var gT    = t + gOff;
+            var src   = ctx.createBufferSource();
+            src.buffer = noiseBuf;
+            src.playbackRate.value = (freq / 200) * rnd(0.92, 1.08);
+            src.loop = true;
+            var gEnv = ctx.createGain();
+            gEnv.gain.setValueAtTime(0, gT);
+            gEnv.gain.linearRampToValueAtTime(vel * rnd(0.25, 0.65), gT + gDur * 0.35);
+            gEnv.gain.linearRampToValueAtTime(0, gT + gDur);
+            var bp = ctx.createBiquadFilter(); bp.type = 'bandpass';
+            bp.frequency.value = freq * rnd(0.7, 2.8); bp.Q.value = p.q || 3.5;
+            src.connect(bp).connect(gEnv).connect(mix);
+            src.start(gT); src.stop(gT + gDur + 0.01);
+        }
+    }
+
+    // ── FM4OP — 4-operator cascade: op4→op3→op2→op1→out ───────────────────────
+    function voiceFM4Op(ctx, dest, freq, t, dur, vel, p) {
+        var ratio = p.ratio || 2;
+        var idx   = Math.min(p.index || 2.2, 3.2);
+        var op1 = ctx.createOscillator(); op1.frequency.value = freq;
+        var op2 = ctx.createOscillator(); op2.frequency.value = freq * (ratio * 0.5);
+        var op3 = ctx.createOscillator(); op3.frequency.value = freq * ratio;
+        var op4 = ctx.createOscillator(); op4.frequency.value = freq * (ratio * 1.414);
+        var mg4 = ctx.createGain(); mg4.gain.value = Math.min(freq * idx * 0.4, freq * 2);
+        var mg3 = ctx.createGain(); mg3.gain.value = Math.min(freq * idx * 0.7, freq * 2.5);
+        var mg2 = ctx.createGain(); mg2.gain.value = Math.min(freq * idx, freq * 3);
+        op4.connect(mg4).connect(op3.frequency);
+        op3.connect(mg3).connect(op2.frequency);
+        op2.connect(mg2).connect(op1.frequency);
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.003, dur * 0.45, 0.38, 0.12, dur, vel * 0.85);
+        op1.connect(g).connect(dest);
+        [op1, op2, op3, op4].forEach(function(o) { o.start(t); o.stop(t + dur + 0.3); });
+    }
+
+    // ── TAPE — wow/flutter/hiss degradation engine ─────────────────────────────
+    function voiceTape(ctx, dest, freq, t, dur, vel, p) {
+        var osc = ctx.createOscillator();
+        osc.type = p.wave || 'sawtooth';
+        osc.frequency.value = freq * (1 + rnd(-0.004, 0.004));
+        // Wow LFO (0.4–1.5 Hz, deep pitch drift)
+        var wow = ctx.createOscillator(); wow.frequency.value = rnd(0.35, 1.4);
+        var wowG = ctx.createGain(); wowG.gain.value = freq * rnd(0.003, 0.009);
+        wow.connect(wowG).connect(osc.frequency);
+        // Flutter LFO (5–14 Hz, tight shimmer)
+        var flutter = ctx.createOscillator(); flutter.frequency.value = rnd(5, 13);
+        var flutG = ctx.createGain(); flutG.gain.value = freq * rnd(0.0005, 0.002);
+        flutter.connect(flutG).connect(osc.frequency);
+        // Tape hiss: filtered noise bed
+        var hiss = ctx.createBufferSource(); hiss.buffer = getNoiseBuffer(ctx); hiss.loop = true;
+        var hissHP = ctx.createBiquadFilter(); hissHP.type = 'highpass'; hissHP.frequency.value = 5000;
+        var hissG = ctx.createGain(); hissG.gain.value = 0.012;
+        hiss.connect(hissHP).connect(hissG);
+        // Soft tape saturation
+        var ws = ctx.createWaveShaper();
+        var curve = new Float32Array(256);
+        for (var i = 0; i < 256; i++) {
+            var x = (i * 2) / 256 - 1;
+            curve[i] = (Math.PI + 180) * x / (Math.PI + 180 * Math.abs(x));
+        }
+        ws.curve = curve;
+        var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = Math.min(p.cutoff || 2800, 3500);
+        var g = ctx.createGain();
+        adsr(ctx, g, t, 0.01, dur * 0.5, 0.55, 0.22, dur, vel * 0.7);
+        osc.connect(ws); hissG.connect(ws);
+        ws.connect(lp).connect(g).connect(dest);
+        [osc, wow, flutter, hiss].forEach(function(n) { n.start(t); n.stop(t + dur + 0.3); });
+    }
+
+    // ── BINAURAL — two sine waves detuned by a beat frequency, L+R split ───────
+    function voiceBinaural(ctx, dest, freq, t, dur, vel, p) {
+        var beat = p.beat || 7.83; // Schumann resonance default
+        var merger = ctx.createChannelMerger(2);
+        var oscL = ctx.createOscillator(); oscL.type = 'sine'; oscL.frequency.value = freq;
+        var oscR = ctx.createOscillator(); oscR.type = 'sine'; oscR.frequency.value = freq + beat;
+        var gL = ctx.createGain(); gL.gain.value = vel * 0.55;
+        var gR = ctx.createGain(); gR.gain.value = vel * 0.55;
+        oscL.connect(gL).connect(merger, 0, 0);
+        oscR.connect(gR).connect(merger, 0, 1);
+        var env = ctx.createGain();
+        adsr(ctx, env, t, 0.06, dur * 0.2, 0.85, 0.7, dur, 1.0);
+        merger.connect(env).connect(dest);
+        [oscL, oscR].forEach(function(o) { o.start(t); o.stop(t + dur + 0.5); });
+    }
+
+    // ── BUFFER — granular grain player from a custom AudioBuffer (e.g. stem) ──
+    // Plays a random short slice of the buffer on each euclidean step.
+    // playbackRate = 1.0 so drums/bass stay in character. Falls back to noise
+    // if no buffer has been loaded yet.
+    function voiceBuffer(ctx, dest, freq, t, dur, vel, p) {
+        var buf = p._buf;
+        if (!buf) { voiceNoise(ctx, dest, freq, t, dur, vel, p); return; }
+        var bufDur = buf.duration;
+        var grainDur = Math.min(Math.max(dur * 0.9, 0.06), 0.20);
+        var offset = Math.random() * Math.max(bufDur - grainDur, 0);
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.playbackRate.value = 1.0; // preserve source character — no pitch shift
+        var env = ctx.createGain();
+        var atk = 0.003;
+        env.gain.setValueAtTime(0.0001, t);
+        env.gain.linearRampToValueAtTime(vel * 0.88, t + atk);
+        env.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(grainDur, atk + 0.01));
+        src.connect(env).connect(dest);
+        src.start(t, offset, grainDur);
+        src.stop(t + grainDur + 0.001);
+    }
+
+    var VOICE_FN = {
+        'SUBTRACTIVE': voiceSubtractive, 'FM': voiceFM, 'SUPERSAW': voiceSupersaw,
+        'ACID': voiceAcid, 'NOISE': voiceNoise, 'KARPLUS': voiceKarplus, 'ADDITIVE': voiceAdditive,
+        'GRANULAR': voiceGranular, 'FM4OP': voiceFM4Op, 'TAPE': voiceTape, 'BINAURAL': voiceBinaural,
+        'BUFFER': voiceBuffer
+    };
+
+    // ── KIT PRESETS — curated 4-layer engine + param configurations ─────────────
+    var KITS = {
+        'FREE': null, // no preset — free chaos
+        'DARK ETHER':   [ {engine:'SUPERSAW',wave:'sawtooth',cutoff:900, q:2,detune:18,ratio:2,  index:2,damp:0.88,partials:5,beat:7 },
+                          {engine:'SUPERSAW',wave:'sawtooth',cutoff:1200,q:2,detune:14,ratio:1.5,index:2,damp:0.88,partials:5,beat:7 },
+                          {engine:'FM',      wave:'sine',    cutoff:2000,q:3,detune:10,ratio:3,  index:2.5,damp:0.85,partials:4,beat:7},
+                          {engine:'NOISE',   wave:'sawtooth',cutoff:800, q:5,detune:12,ratio:2,  index:1.5,damp:0.85,fmul:3,band:'bandpass',beat:7}],
+        'ACID TRIP':    [ {engine:'KARPLUS', wave:'sawtooth',cutoff:1200,q:5,detune:10,ratio:2,  index:3,  damp:0.88,partials:4,beat:7},
+                          {engine:'ACID',    wave:'sawtooth',cutoff:1600,q:7,detune:12,ratio:2,  index:2.5,damp:0.87,partials:5,beat:7},
+                          {engine:'FM',      wave:'sawtooth',cutoff:2200,q:4,detune:14,ratio:3.5,index:3,  damp:0.86,partials:5,beat:7},
+                          {engine:'NOISE',   wave:'sawtooth',cutoff:1000,q:6,detune:10,ratio:2,  index:2,  damp:0.85,fmul:4,band:'highpass',beat:7}],
+        'GRANULAR':     [ {engine:'GRANULAR',wave:'sawtooth',cutoff:800, q:3.5,detune:8,ratio:2, index:2,  damp:0.85,partials:4,grains:10,beat:7},
+                          {engine:'GRANULAR',wave:'sawtooth',cutoff:1400,q:4,  detune:10,ratio:2,index:2,  damp:0.85,partials:4,grains:8, beat:7},
+                          {engine:'GRANULAR',wave:'sawtooth',cutoff:2000,q:4,  detune:12,ratio:2,index:2,  damp:0.85,partials:4,grains:7, beat:7},
+                          {engine:'GRANULAR',wave:'sawtooth',cutoff:3000,q:3,  detune:8, ratio:2,index:2,  damp:0.85,partials:4,grains:12,beat:7}],
+        'TAPE GHOST':   [ {engine:'TAPE',    wave:'sawtooth',cutoff:2200,q:2,detune:8,ratio:2,   index:1.5,damp:0.85,partials:4,beat:7},
+                          {engine:'TAPE',    wave:'square',  cutoff:1800,q:2,detune:10,ratio:2,  index:1.5,damp:0.85,partials:4,beat:7},
+                          {engine:'TAPE',    wave:'triangle',cutoff:3000,q:2,detune:6, ratio:2,  index:1.5,damp:0.85,partials:4,beat:7},
+                          {engine:'NOISE',   wave:'sawtooth',cutoff:800, q:5,detune:10,ratio:2,  index:1.5,damp:0.85,fmul:2,band:'bandpass',beat:7}],
+        'FM BRUTALIST': [ {engine:'FM4OP',   wave:'sawtooth',cutoff:1000,q:4,detune:14,ratio:1,  index:3.2,damp:0.88,partials:5,beat:7},
+                          {engine:'FM4OP',   wave:'sawtooth',cutoff:1800,q:4,detune:12,ratio:2,  index:2.8,damp:0.87,partials:5,beat:7},
+                          {engine:'FM4OP',   wave:'sawtooth',cutoff:2500,q:3,detune:16,ratio:3,  index:2.5,damp:0.86,partials:5,beat:7},
+                          {engine:'FM',      wave:'sawtooth',cutoff:800, q:5,detune:10,ratio:3.5,index:3,  damp:0.85,partials:4,beat:7}],
+        'BINAURAL':     [ {engine:'BINAURAL',wave:'sine',    cutoff:800, q:2,detune:8,ratio:2,   index:1,  damp:0.85,partials:4,beat:40},
+                          {engine:'BINAURAL',wave:'sine',    cutoff:900, q:2,detune:8,ratio:2,   index:1,  damp:0.85,partials:4,beat:10},
+                          {engine:'BINAURAL',wave:'sine',    cutoff:1000,q:2,detune:8,ratio:2,   index:1,  damp:0.85,partials:4,beat:7.83},
+                          {engine:'BINAURAL',wave:'sine',    cutoff:1200,q:2,detune:8,ratio:2,   index:1,  damp:0.85,partials:4,beat:4}],
+        'PHYSICAL':     [ {engine:'KARPLUS', wave:'sawtooth',cutoff:1200,q:4,detune:8,ratio:2,   index:2,  damp:0.9, partials:5,beat:7},
+                          {engine:'KARPLUS', wave:'sawtooth',cutoff:1800,q:3,detune:10,ratio:2,  index:2,  damp:0.88,partials:5,beat:7},
+                          {engine:'ADDITIVE',wave:'sine',    cutoff:2400,q:2,detune:8, ratio:2,  index:1.5,damp:0.85,partials:6,beat:7},
+                          {engine:'KARPLUS', wave:'sawtooth',cutoff:3000,q:2,detune:6, ratio:2,  index:1.5,damp:0.85,partials:4,beat:7}],
+        'CASSETTE NOIR':[ {engine:'TAPE',    wave:'sawtooth',cutoff:1600,q:3,detune:10,ratio:2,  index:1.5,damp:0.87,partials:4,beat:7},
+                          {engine:'SUBTRACTIVE',wave:'square',cutoff:1200,q:4,detune:12,ratio:2, index:2,  damp:0.86,partials:4,beat:7},
+                          {engine:'NOISE',   wave:'sawtooth',cutoff:900, q:6,detune:8, ratio:2,  index:1.5,damp:0.85,fmul:3,band:'bandpass',beat:7},
+                          {engine:'TAPE',    wave:'triangle',cutoff:2200,q:2,detune:8, ratio:2,  index:1.5,damp:0.85,partials:4,beat:7}],
+        'NEURAL STATIC':[ {engine:'GRANULAR',wave:'sawtooth',cutoff:600, q:4, detune:10,ratio:2, index:2,  damp:0.85,partials:4,grains:12,beat:7},
+                          {engine:'FM4OP',   wave:'sawtooth',cutoff:1400,q:3, detune:14,ratio:2, index:2.5,damp:0.86,partials:5,beat:7},
+                          {engine:'NOISE',   wave:'sawtooth',cutoff:2000,q:5, detune:12,ratio:2, index:2,  damp:0.85,fmul:5,band:'highpass',beat:7},
+                          {engine:'TAPE',    wave:'sawtooth',cutoff:800, q:3, detune:8, ratio:2, index:1.5,damp:0.85,partials:4,beat:7}]
+    };
+    var KIT_NAMES = Object.keys(KITS);
+
+    // ── Randomisation ─────────────────────────────────────────────────────────
+    function randomLayer(role) {
+        var scale = SCALES[S.scaleName];
+        // build a short pitch sequence from the scale
+        var seqLen = pick([4, 6, 8]);
+        var seq = [];
+        for (var i = 0; i < seqLen; i++) {
+            var deg = rndInt(0, scale.length - 1);
+            var oct = role.octave + rndInt(0, 1);
+            seq.push(S.rootNote + scale[deg] + oct * 12);
+        }
+        return {
+            role: role,
+            engine: pick(ENGINES),
+            pulses: Math.max(1, Math.min(14, rndInt(Math.max(1, S.density - 2), Math.min(14, S.density + 2)))),
+            pattern: null,            // filled below
+            seq: seq,
+            seqPos: 0,
+            gain: rnd(0.45, 0.9),
+            params: {
+                wave: pick(['sawtooth', 'square', 'triangle']),
+                cutoff: rnd(400, 3000),   // was 600-4200 — high cutoff + high Q = screech
+                q: rnd(1.5, 6),           // was 2-14 — above 7 ACID self-resonates
+                ratio: pick([1, 1.5, 2, 3, 3.5]),
+                index: rnd(1.0, 3.5),     // was 1.5-6 — high index + bass freq = extreme mod
+                detune: rnd(8, 18),
+                band: pick(['bandpass', 'highpass']),
+                fmul: rnd(2, 6),
+                damp: rnd(0.80, 0.90),    // ramp-to-zero enforced in voiceKarplus — keep coef low
+                partials: rndInt(3, 6),   // was 3-8
+                accent: false
+            },
+            dur: role.name === 'BASS' ? rnd(0.18, 0.4)
+               : role.name === 'TEXTURE' ? rnd(0.15, 0.5)
+               : rnd(0.08, 0.25),
+            muted: false,
+            lock: false
+        };
+    }
+
+    function regenerate(force) {
+        for (var i = 0; i < 4; i++) {
+            if (!S.layers[i] || (!S.layers[i].lock) || force) {
+                var keepLock = S.layers[i] ? S.layers[i].lock : false;
+                S.layers[i] = randomLayer(LAYER_ROLES[i]);
+                S.layers[i].lock = force ? false : keepLock;
+            }
+            S.layers[i].pattern = euclid(S.layers[i].pulses, 16);
+        }
+    }
+
+    // CHAOS — randomise everything (respecting per-layer locks)
+    function chaos() {
+        // If SS transport is not playing, kick it — solo NOIZE only to prevent audio blast
+        if (typeof SonicSuite !== 'undefined' && !SonicSuite._state.playing) {
+            SonicSuite._state.order.forEach(function(id) {
+                SonicSuite.setMute(id, id !== 'noize');
+            });
+            SonicSuite.start();
+        }
+        // occasionally roll a new scale/key for big variation
+        if (Math.random() < 0.5) S.scaleName = pick(SCALE_NAMES);
+        if (Math.random() < 0.35) S.rootNote = 45 + rndInt(0, 12);
+        regenerate(false);
+        S.flashUntil = (S.ctx ? S.ctx.currentTime : 0) + 0.45;
+        refreshUI();
+        L('NOIZE: CHAOS // ' + noteName(S.rootNote) + ' ' + S.scaleName);
+    }
+
+    function noteName(n) { return NOTE_NAMES[n % 12] + (Math.floor(n / 12) - 1); }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SCHEDULER — lookahead. Queues audio ~100ms ahead on the audio clock.
+    // ─────────────────────────────────────────────────────────────────────────
+    function scheduleStep(step, t) {
+        var stepDur = (60 / S.bpm) / 4;       // 16th note
+        var isDownbeat = (step % 4 === 0);
+        for (var i = 0; i < 4; i++) {
+            var ly = S.layers[i];
+            if (!ly || ly.muted || !ly.pattern[step]) continue;
+            var note = ly.seq[ly.seqPos % ly.seq.length];
+            ly.seqPos++;
+            var freq = mtof(note);
+            var vel = (isDownbeat ? 0.95 : 0.7) * ly.gain;
+            if (ly.engine === 'ACID') ly.params.accent = isDownbeat;
+            var fn = VOICE_FN[ly.engine] || voiceSubtractive;
+            try { fn(S.ctx, S.dryGain, freq, t, ly.dur, vel, ly.params); } catch (e) {}
+            // queue the matching VISUAL pulse for when this note is actually heard
+            S.vizQueue.push({ t: t, viz: ly.role.viz, amount: vel });
+        }
+    }
+
+    function schedulerTick() {
+        if (!S.active) return;
+        var ctx = S.ctx;
+        var stepDur = (60 / S.bpm) / 4;
+        while (S.nextStepTime < ctx.currentTime + S.scheduleAhead) {
+            // apply a queued scene recall exactly on a bar boundary
+            if (S.stepIndex === 0 && S.pendingScene !== null) {
+                applyScene(S.pendingScene); S.pendingScene = null;
+            }
+            scheduleStep(S.stepIndex, S.nextStepTime);
+            S.nextStepTime += stepDur;
+            S.stepIndex = (S.stepIndex + 1) % 16;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // VISUAL DRAINER — own rAF. Pops viz events when their audio time arrives,
+    // bumps the VJ modulation channel, then decays it. One-directional coupling.
+    // ─────────────────────────────────────────────────────────────────────────
+    function vizLoop() {
+        if (!S.active) return;
+        S.rafId = requestAnimationFrame(vizLoop);
+        if (!APP || !APP.vj) return;
+        var ctx = S.ctx; if (!ctx) return;
+        var now = ctx.currentTime;
+        // drain due audio events
+        var q = S.vizQueue, keep = [];
+        for (var i = 0; i < q.length; i++) {
+            if (q[i].t <= now) {
+                var e = q[i];
+                if (e.viz === 'bright') {
+                    // BASS → brightness flash + seismic punch (most visible)
+                    APP.vj._rndBright = Math.min(1.2, (APP.vj._rndBright || 0) + e.amount * 1.4);
+                    if (typeof _vjHeavySync === 'function') _vjHeavySync();
+                }
+                else if (e.viz === 'hue')      APP.vj._rndHue      = ((APP.vj._rndHue || 0) + e.amount * 72) % 360;
+                else if (e.viz === 'sat')       APP.vj._rndSat      = Math.min(3.0, (APP.vj._rndSat      || 0) + e.amount * 2.0);
+                else if (e.viz === 'contrast')  APP.vj._rndContrast = Math.min(1.2, (APP.vj._rndContrast || 0) + e.amount * 1.0);
+            } else { keep.push(q[i]); }
+        }
+        S.vizQueue = keep;
+        // CHAOS flash
+        if (now < S.flashUntil) {
+            var fk = (S.flashUntil - now) / 0.45;
+            APP.vj._rndBright = Math.max(APP.vj._rndBright || 0, fk * 1.0);
+        }
+        // Slower decay so effects are visible between notes
+        APP.vj._rndBright   = decay(APP.vj._rndBright,   0.92);
+        APP.vj._rndSat      = decay(APP.vj._rndSat,      0.90);
+        APP.vj._rndContrast = decay(APP.vj._rndContrast, 0.88);
+        APP.vj._rndHue      = decayHue(APP.vj._rndHue);
+    }
+    function decay(v, f) { v = (v || 0) * f; return v < 0.002 ? 0 : v; }
+    function decayHue(v) { v = (v || 0) * 0.95; return Math.abs(v) < 0.3 ? 0 : v; }
+
+    function clearViz() {
+        APP.vj._rndBright = 0; APP.vj._rndSat = 0; APP.vj._rndContrast = 0; APP.vj._rndHue = 0;
+        S.vizQueue = [];
+    }
+
+    // ── Audio bus ─────────────────────────────────────────────────────────────
+    function _buildBus(outNode) {
+        var ctx = S.ctx;
+        S.dryGain = ctx.createGain(); S.dryGain.gain.value = 0.35; // safety ceiling — layers sum here
+        S.wetGain = ctx.createGain(); S.wetGain.gain.value = S.reverbMix * 0.6; // tame reverb
+        S.convolver = ctx.createConvolver(); S.convolver.buffer = buildReverbIR(ctx);
+        // Internal safety compressor — tames simultaneous layer peaks before output
+        S.safetyComp = ctx.createDynamicsCompressor();
+        S.safetyComp.threshold.value = -18;
+        S.safetyComp.knee.value      = 10;
+        S.safetyComp.ratio.value     = 6;
+        S.safetyComp.attack.value    = 0.003;
+        S.safetyComp.release.value   = 0.1;
+        S.rndBus = ctx.createGain(); S.rndBus.gain.value = S.masterGain;
+        S.dryGain.connect(S.safetyComp);
+        S.dryGain.connect(S.convolver).connect(S.wetGain).connect(S.safetyComp);
+        S.safetyComp.connect(S.rndBus);
+        // Route to: SS card bus → SS master → limiter; or fallback to APP master
+        var dest = outNode || (APP.audio && APP.audio.masterGain) || ctx.destination;
+        S.rndBus.connect(dest);
+    }
+
+    function _ensureReady() {
+        if (!S.ctx) {
+            if (typeof igniteAudio === 'function') igniteAudio();
+            if (typeof ensureAudioChain === 'function') ensureAudioChain();
+            S.ctx = (S._ssACtx) || (APP.audio && APP.audio.ctx) ||
+                    new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+        }
+        if (S.ctx.state === 'suspended') S.ctx.resume();
+        if (!S.rndBus) _buildBus(S._ssBus);
+        if (!S.layers.length) regenerate(true);
+        else { for (var i = 0; i < 4; i++) { if (!S.layers[i].pattern) S.layers[i].pattern = euclid(S.layers[i].pulses, 16); } }
+    }
+
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
+    function start() {
+        if (S.active) return;
+        _ensureReady();
+        S.active = true;
+        S.nextStepTime = S.ctx.currentTime + 0.06;
+        S.stepIndex = 0;
+        if (!S.timerId) S.timerId = setInterval(schedulerTick, S.lookahead);
+        if (!S.rafId) S.rafId = requestAnimationFrame(vizLoop);
+        refreshUI();
+        L('NOIZE: ACTIVE // ' + noteName(S.rootNote) + ' ' + S.scaleName);
+    }
+
+    function stop() {
+        S.active = false;
+        if (S.timerId) { clearInterval(S.timerId); S.timerId = null; }
+        if (S.rafId)   { cancelAnimationFrame(S.rafId); S.rafId = null; }
+        clearViz();
+        refreshUI();
+        L('NOIZE: STOPPED');
+    }
+
+    function toggle() { S.active ? stop() : start(); }
+
+    // ── SS Card: onTick (master clock drives NOIZE, no internal setInterval) ──
+    function _onTick(time, step16) {
+        if (!S.ctx) { S.ctx = S._ssACtx || (APP.audio && APP.audio.ctx); if (!S.ctx) return; }
+        if (S.ctx.state === 'suspended') S.ctx.resume();
+        if (!S.rndBus) _buildBus(S._ssBus);
+        if (!S.layers.length) regenerate(true);
+        else { for (var i = 0; i < 4; i++) { if (!S.layers[i].pattern) S.layers[i].pattern = euclid(S.layers[i].pulses, 16); } }
+        S.active = true;
+        // Bar boundary — apply queued scene exactly on step 0
+        if (step16 === 0 && S.pendingScene !== null) {
+            applyScene(S.pendingScene); S.pendingScene = null;
+        }
+        scheduleStep(step16, time);
+        if (!S.rafId) S.rafId = requestAnimationFrame(vizLoop);
+    }
+
+    function _onStop() {
+        S.active = false;
+        if (S.rafId) { cancelAnimationFrame(S.rafId); S.rafId = null; }
+        clearViz();
+        refreshUI();
+    }
+
+    // ── SS Card: mount — called once when card is added to the workspace ──────
+    function _mount(body, ctx) {
+        S._ssBus  = ctx && ctx.bus;
+        S._ssACtx = ctx && ctx.audioCtx;
+        body.innerHTML = _buildHTML();
+        if (!S.layers.length) regenerate(true);
+        refreshUI();
+    }
+
+    function _buildHTML() {
+        var scaleOpts = SCALE_NAMES.map(function(n) {
+            return '<option value="' + n + '"' + (n === S.scaleName ? ' selected' : '') + '>' + n + '</option>';
+        }).join('');
+        var rootOpts = NOTE_NAMES.map(function(n, i) {
+            var midi = 48 + i;  // C3 octave root
+            return '<option value="' + midi + '"' + (S.rootNote % 12 === i ? ' selected' : '') + '>' + n + '</option>';
+        }).join('');
+        var layers = '';
+        for (var i = 0; i < 4; i++) {
+            var role = LAYER_ROLES[i];
+            layers +=
+                '<div class="noize-layer" data-i="' + i + '">' +
+                    '<span class="noize-layer-role">' + ['A','B','C','D'][i] + '\xb7' + role.name + '</span>' +
+                    '<button class="noize-eng" id="noize-eng-' + i + '" onclick="NOIZE.cycleEngine(' + i + ')">\u2014</button>' +
+                    '<span class="noize-viz">' + role.vizLabel + '</span>' +
+                    '<button class="noize-mini" id="noize-lock-' + i + '" onclick="NOIZE.toggleLock(' + i + ')" title="Lock">L</button>' +
+                    '<button class="noize-mini" id="noize-mute-' + i + '" onclick="NOIZE.toggleMute(' + i + ')" title="Mute">M</button>' +
+                    '<button class="noize-mini" id="noize-load-' + i + '" onclick="NOIZE.loadSample(' + i + ')" title="Load audio file into this layer" style="color:#aaff44;border-color:rgba(170,255,68,0.35);">+</button>' +
+                '</div>';
+        }
+        var scenes = '<span class="noize-lbl">SCN</span>';
+        for (var s = 0; s < 8; s++) {
+            scenes += '<button class="noize-scene" id="noize-scene-' + s +
+                '" onclick="NOIZE.scene(' + s + ')" oncontextmenu="NOIZE.sceneClear(' + s + ');return false;">' + (s + 1) + '</button>';
+        }
+        var kitOpts = KIT_NAMES.map(function(n) {
+            return '<option value="' + n + '"' + (n === S.kitName ? ' selected' : '') + '>' + n + '</option>';
+        }).join('');
+
+        return  '<div id="noize-status-wrap"><div id="noize-status">OFFLINE</div></div>' +
+                '<button id="noize-chaos-btn" class="noize-chaos-full" onclick="NOIZE.chaos()">\u25ce CHAOS \u2014 RANDOMISE ALL</button>' +
+                '<div class="noize-params">' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">KIT</span>' +
+                        '<select id="noize-kit-sel" class="noize-select noize-kit-sel" onchange="NOIZE.setKit(this.value)">' + kitOpts + '</select>' +
+                        '<button id="noize-morph-btn" class="noize-mini noize-morph" onclick="NOIZE.toggleMorph()" title="Morph mode: chaos blends params instead of jumping">MRP</button>' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">KEY</span>' +
+                        '<select id="noize-scale-sel" class="noize-select" onchange="NOIZE.setScale(this.value)">' + scaleOpts + '</select>' +
+                        '<select id="noize-root-sel" class="noize-select noize-root-sel" onchange="NOIZE.setRoot(+this.value)">' + rootOpts + '</select>' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">BPM</span>' +
+                        '<input type="range" class="noize-slider" id="noize-bpm-sl" min="60" max="200" step="1" value="' + S.bpm + '" oninput="NOIZE.setBPM(this.value)">' +
+                        '<span class="noize-lbl" id="noize-bpm-val" style="width:28px;text-align:right;">' + S.bpm + '</span>' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">DNS</span>' +
+                        '<input type="range" class="noize-slider" id="noize-dns-sl" min="1" max="9" step="1" value="' + S.density + '" oninput="NOIZE.setDensity(this.value)" title="Density — controls euclidean pulse count on CHAOS">' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">ATK</span>' +
+                        '<input type="range" class="noize-slider" id="noize-atk-sl" min="0.01" max="1.0" step="0.01" value="' + (S.attackMult || 0.5) + '" oninput="NOIZE.setAttack(this.value)">' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">RVB</span>' +
+                        '<input type="range" class="noize-slider" id="noize-rvb-sl" min="0" max="1" step="0.01" value="' + S.reverbMix + '" oninput="NOIZE.setReverb(this.value)">' +
+                    '</div>' +
+                    '<div class="noize-row">' +
+                        '<span class="noize-lbl">VOL</span>' +
+                        '<input type="range" class="noize-slider" id="noize-vol-sl" min="0" max="1.2" step="0.01" value="' + S.masterGain + '" oninput="NOIZE.setGain(this.value)">' +
+                    '</div>' +
+                '</div>' +
+                '<div id="noize-layers">' + layers + '</div>' +
+                '<div id="noize-scenes">' + scenes + '</div>';
+    }
+
+    // ── Scenes ────────────────────────────────────────────────────────────────
+    function snapshot() {
+        return JSON.parse(JSON.stringify({
+            bpm: S.bpm, scaleName: S.scaleName, rootNote: S.rootNote,
+            reverbMix: S.reverbMix, layers: S.layers.map(function (l) {
+                return { engine: l.engine, pulses: l.pulses, seq: l.seq, gain: l.gain,
+                         params: l.params, dur: l.dur, muted: l.muted, lock: l.lock };
+            })
+        }));
+    }
+    function applyScene(idx) {
+        var sc = S.scenes[idx]; if (!sc) return;
+        S.bpm = sc.bpm; S.scaleName = sc.scaleName; S.rootNote = sc.rootNote; S.reverbMix = sc.reverbMix;
+        for (var i = 0; i < 4; i++) {
+            var src = sc.layers[i]; if (!src) continue;
+            S.layers[i] = {
+                role: LAYER_ROLES[i], engine: src.engine, pulses: src.pulses,
+                pattern: euclid(src.pulses, 16), seq: src.seq.slice(), seqPos: 0,
+                gain: src.gain, params: JSON.parse(JSON.stringify(src.params)),
+                dur: src.dur, muted: src.muted, lock: src.lock
+            };
+        }
+        if (S.wetGain) S.wetGain.gain.setTargetAtTime(S.reverbMix, S.ctx.currentTime, 0.05);
+        refreshUI();
+        L('NOIZE: SCENE ' + (idx + 1) + ' RECALL');
+    }
+    function sceneButton(idx) {
+        // empty slot → save; filled slot → queue recall on next bar
+        if (!S.scenes[idx]) { S.scenes[idx] = snapshot(); L('NOIZE: SCENE ' + (idx + 1) + ' SAVED'); refreshUI(); }
+        else if (S.active) { S.pendingScene = idx; L('NOIZE: SCENE ' + (idx + 1) + ' QUEUED'); }
+        else { applyScene(idx); }
+    }
+    function sceneClear(idx) { S.scenes[idx] = null; refreshUI(); }
+
+    // ── Param setters (from UI) ────────────────────────────────────────────────
+    function setGain(v) {
+        S.masterGain = +v;
+        if (S.rndBus && S.ctx) {
+            S.rndBus.gain.cancelScheduledValues(S.ctx.currentTime);
+            S.rndBus.gain.setTargetAtTime(+v, S.ctx.currentTime, 0.04);
+        }
+    }
+    function setReverb(v) {
+        S.reverbMix = +v;
+        if (S.wetGain && S.ctx) {
+            S.wetGain.gain.cancelScheduledValues(S.ctx.currentTime);
+            S.wetGain.gain.setTargetAtTime(+v * 0.6, S.ctx.currentTime, 0.06);
+        }
+    }
+    function setScale(name) { if (SCALES[name]) { S.scaleName = name; regenerate(false); refreshUI(); } }
+    function setRoot(midi) { S.rootNote = Math.max(36, Math.min(72, midi | 0)); regenerate(false); refreshUI(); }
+    function toggleLock(i) { if (S.layers[i]) { S.layers[i].lock = !S.layers[i].lock; refreshUI(); } }
+    function toggleMute(i) { if (S.layers[i]) { S.layers[i].muted = !S.layers[i].muted; refreshUI(); } }
+    function cycleEngine(i) {
+        if (!S.layers[i]) return;
+        // Clear stale buffer reference when leaving BUFFER engine
+        if (S.layers[i].engine === 'BUFFER') {
+            S.layers[i].params._buf      = null;
+            S.layers[i].params._bufLabel = null;
+        }
+        var idx = ENGINES.indexOf(S.layers[i].engine);
+        S.layers[i].engine = ENGINES[(idx + 1) % ENGINES.length];
+        refreshUI();
+    }
+
+    function setKit(name) {
+        S.kitName = name;
+        var preset = KITS[name];
+        if (!preset) { refreshUI(); return; } // FREE mode — just tag it
+        for (var i = 0; i < 4; i++) {
+            if (!S.layers[i]) S.layers[i] = randomLayer(LAYER_ROLES[i]);
+            S.layers[i].engine = preset[i].engine;
+            S.layers[i].params = JSON.parse(JSON.stringify(preset[i]));
+            S.layers[i].pattern = euclid(S.layers[i].pulses, 16);
+        }
+        refreshUI();
+        L('NOIZE: KIT → ' + name);
+    }
+
+    function setBPM(v) {
+        S.bpm = Math.max(60, Math.min(200, +v | 0));
+        var el = document.getElementById('noize-bpm-val');
+        if (el) el.textContent = S.bpm;
+    }
+
+    function setAttack(v) {
+        S.attackMult = Math.max(0.01, Math.min(1.0, +v));
+    }
+
+    function setDensity(v) {
+        S.density = Math.max(1, Math.min(9, +v | 0));
+        // Re-apply pulses to all unlocked layers immediately
+        for (var i = 0; i < 4; i++) {
+            if (S.layers[i] && !S.layers[i].lock) {
+                S.layers[i].pulses = Math.max(1, Math.min(14, S.density + rndInt(-1, 1)));
+                S.layers[i].pattern = euclid(S.layers[i].pulses, 16);
+            }
+        }
+        refreshUI();
+    }
+
+    function toggleMorph() {
+        S.morph = !S.morph;
+        refreshUI();
+        L('NOIZE: MORPH ' + (S.morph ? 'ON' : 'OFF'));
+    }
+
+    // Override chaos to blend params when morph is on
+    var _origChaos = chaos;
+    chaos = function() {
+        if (!S.morph) { _origChaos(); return; }
+        // Morph: keep engines, smoothly glide cutoff/gain toward new random targets
+        if (typeof SonicSuite !== 'undefined' && !SonicSuite._state.playing) {
+            SonicSuite._state.order.forEach(function(id) { SonicSuite.setMute(id, id !== 'noize'); });
+            SonicSuite.start();
+        }
+        if (Math.random() < 0.3) S.scaleName = pick(SCALE_NAMES);
+        if (Math.random() < 0.2) S.rootNote = 45 + rndInt(0, 12);
+        for (var i = 0; i < 4; i++) {
+            if (S.layers[i] && !S.layers[i].lock) {
+                // Blend params: interpolate cutoff and gain toward new values
+                var newCutoff = rnd(400, 3000);
+                var newGain   = rnd(0.45, 0.9);
+                S.layers[i].params.cutoff = S.layers[i].params.cutoff * 0.5 + newCutoff * 0.5;
+                S.layers[i].gain          = S.layers[i].gain * 0.6 + newGain * 0.4;
+                S.layers[i].pulses = Math.max(1, Math.min(14, S.density + rndInt(-2, 2)));
+                S.layers[i].pattern = euclid(S.layers[i].pulses, 16);
+            }
+        }
+        S.flashUntil = (S.ctx ? S.ctx.currentTime : 0) + 0.45;
+        refreshUI();
+    };
+
+    // ── UI ──────────────────────────────────────────────────────────────────────
+    function refreshUI() {
+        var bpmDisp = typeof SonicSuite !== 'undefined' ? SonicSuite._state.bpm : S.bpm;
+        var st = byId('noize-status');
+        if (st) st.textContent = S.active
+            ? (noteName(S.rootNote) + ' \xb7 ' + S.scaleName + ' \xb7 ' + bpmDisp + ' BPM')
+            : 'READY \u2014 PRESS PLAY';
+        // Sync kit / morph / density
+        var kitSel = byId('noize-kit-sel');
+        if (kitSel && kitSel.value !== S.kitName) kitSel.value = S.kitName;
+        var morphBtn = byId('noize-morph-btn');
+        if (morphBtn) morphBtn.classList.toggle('on', S.morph);
+        var dnsSl = byId('noize-dns-sl');
+        if (dnsSl && +dnsSl.value !== S.density) dnsSl.value = S.density;
+        // Sync key selectors
+        var scaleSel = byId('noize-scale-sel');
+        if (scaleSel && scaleSel.value !== S.scaleName) scaleSel.value = S.scaleName;
+        var rootSel = byId('noize-root-sel');
+        if (rootSel) { var expectedRoot = String(48 + (S.rootNote % 12)); if (rootSel.value !== expectedRoot) rootSel.value = expectedRoot; }
+        // Layer rows
+        for (var i = 0; i < 4; i++) {
+            var ly = S.layers[i];
+            var eng = byId('noize-eng-' + i);
+            if (eng) {
+                var engLabel = ly ? ly.engine : '\u2014';
+                if (ly && ly.engine === 'BUFFER' && ly.params && ly.params._bufLabel) {
+                    engLabel = 'STM\xb7' + ly.params._bufLabel.slice(0, 4);
+                }
+                eng.textContent = engLabel;
+                eng.style.color = (ly && ly.engine === 'BUFFER') ? '#ff8800' : '';
+                eng.style.borderColor = (ly && ly.engine === 'BUFFER') ? 'rgba(255,136,0,0.5)' : '';
+            }
+            var lk = byId('noize-lock-' + i);
+            if (lk && ly) lk.classList.toggle('on', ly.lock);
+            var mt = byId('noize-mute-' + i);
+            if (mt && ly) mt.classList.toggle('on', ly.muted);
+        }
+        // Scene slots
+        for (var s = 0; s < 8; s++) {
+            var sb = byId('noize-scene-' + s);
+            if (sb) sb.classList.toggle('filled', !!S.scenes[s]);
+        }
+    }
+
+    // ── Standalone mount into DrisLab (#noize-mount) ───────────────
+    function _drisMount() {
+        var el = document.getElementById('noize-mount');
+        if (el) _mount(el, null);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _drisMount);
+    else _drisMount();
+
+    // ── File loader — open a file picker, decode audio, load into layer ───────
+    function loadSampleFile(layerIdx) {
+        if (layerIdx < 0 || layerIdx > 3) return;
+        var input = document.createElement('input');
+        input.type   = 'file';
+        input.accept = 'audio/*';
+        input.style.display = 'none';
+        document.body.appendChild(input);
+        input.onchange = function () {
+            var file = input.files && input.files[0];
+            document.body.removeChild(input);
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                _ensureReady();
+                var ctx = S._ssACtx || (APP && APP.audio && APP.audio.ctx) || S.ctx;
+                if (!ctx) { L('NOIZE: no audio context for decode'); return; }
+                // slice(0) gives decodeAudioData its own copy — some browsers detach the buffer
+                ctx.decodeAudioData(e.target.result.slice(0), function (buf) {
+                    if (!S.layers[layerIdx]) S.layers[layerIdx] = randomLayer(LAYER_ROLES[layerIdx]);
+                    S.layers[layerIdx].engine          = 'BUFFER';
+                    S.layers[layerIdx].params._buf      = buf;
+                    S.layers[layerIdx].params._bufLabel = file.name.replace(/\.[^.]+$/, '').toUpperCase().slice(0, 4);
+                    if (!S.layers[layerIdx].pattern) {
+                        S.layers[layerIdx].pattern = euclid(S.layers[layerIdx].pulses, 16);
+                    }
+                    refreshUI();
+                    L('NOIZE: FILE \u2192 L' + (layerIdx + 1) + ' (' + file.name + ')');
+                }, function (err) {
+                    L('NOIZE: decode failed \u2014 ' + (err && err.message ? err.message : 'unsupported format'));
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    }
+
+    // ── Public API ────────────────────────────────────────────────────────────
+    window.NOIZE = {
+        toggle: toggle, start: start, stop: stop, chaos: chaos,
+        setGain: setGain, setReverb: setReverb,
+        setScale: setScale, setRoot: setRoot,
+        toggleLock: toggleLock, toggleMute: toggleMute, cycleEngine: cycleEngine,
+        scene: sceneButton, sceneClear: sceneClear,
+        setKit: setKit, setDensity: setDensity, toggleMorph: toggleMorph,
+        setBPM: setBPM, setAttack: setAttack,
+        // importStem — called by Stems card "→ NOIZE" button
+        // layerIdx: 0=BASS, 1=CHORD, 2=LEAD, 3=TEXTURE
+        loadSample: loadSampleFile,
+        importStem: function(layerIdx, buf, label) {
+            if (layerIdx < 0 || layerIdx > 3 || !buf) return;
+            _ensureReady();
+            if (!S.layers[layerIdx]) S.layers[layerIdx] = randomLayer(LAYER_ROLES[layerIdx]);
+            S.layers[layerIdx].engine = 'BUFFER';
+            S.layers[layerIdx].params._buf      = buf;
+            S.layers[layerIdx].params._bufLabel = (label || 'STEM').toUpperCase().slice(0, 4);
+            if (!S.layers[layerIdx].pattern) {
+                S.layers[layerIdx].pattern = euclid(S.layers[layerIdx].pulses, 16);
+            }
+            refreshUI();
+            L('NOIZE: STEM \u2192 L' + (layerIdx + 1) + ' (' + (label || 'STEM') + ')');
+        },
+        get state() { return S; }
+    };
+})();
+
+    </script>
+    <script>
+    // Transport glue for the DrisLab PLAY button + auto-start on CHAOS.
+    (function () {
+        if (!window.NOIZE) return;
+        function updateBtn() {
+            var b = document.getElementById('noize-play-btn');
+            if (b && window.NOIZE.state) {
+                var on = window.NOIZE.state.active;
+                b.textContent = on ? '■ STOP' : '▶ PLAY';
+                b.classList.toggle('active', on);
+            }
+        }
+        var _chaos = window.NOIZE.chaos;
+        window.NOIZE.chaos = function () {
+            if (window.NOIZE.state && !window.NOIZE.state.active) window.NOIZE.start();
+            _chaos(); updateBtn();
+        };
+        window.DRIS_NOIZE_toggle = function () {
+            window.NOIZE.toggle(); updateBtn();
+        };
+    })();
+    </script>
+
 </body>
 </html>
