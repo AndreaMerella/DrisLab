@@ -1779,6 +1779,15 @@ loop(8, () => {
                     // Create audio context
                     try {
                         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        // init() runs inside a deferred animation callback (not a user
+                        // gesture), so the context starts suspended on Chrome. Resume it,
+                        // and also resume on the next pointer/keydown as a fallback.
+                        audioCtx.resume();
+                        const _resumeOnce = () => {
+                            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                        };
+                        document.addEventListener('pointerdown', _resumeOnce);
+                        document.addEventListener('keydown', _resumeOnce);
                         console.log('Audio context created');
                     } catch (audioErr) {
                         console.error('Failed to create audio context:', audioErr);
@@ -3250,6 +3259,9 @@ loop(8, () => {
             let codeLoopTimeout = null;
             
             function executeCode() {
+                // Ensure the studio audio context is running (it can start
+                // suspended because init() runs outside a user gesture).
+                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
                 const code = document.getElementById('code-input').value;
                 const output = document.getElementById('code-output');
                 
@@ -3811,6 +3823,7 @@ beat(0.25)
             // Trigger one noise voice. opts override noiseState for this hit.
             function playNoiseVoice(opts = {}) {
                 if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 if (!noiseFx) initNoiseFX();
                 const o = Object.assign({}, noiseState, opts);
                 const now = audioCtx.currentTime;
@@ -3859,6 +3872,7 @@ beat(0.25)
             // Sustained drone: start/stop a held noise voice driven by macros
             function toggleNoiseDrone() {
                 if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 if (!noiseFx) initNoiseFX();
                 const btn = document.getElementById('noise-drone-btn');
                 if (droneNodes) {
